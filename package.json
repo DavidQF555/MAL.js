@@ -1,0 +1,23 @@
+{
+    "name": "mal.js",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DavidQF555/MAL.js.git"
+    },
+    "scripts": {
+        "build": "tsc"
+    },
+    "author": "DavidQF555",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/DavidQF555/MAL.js/issues"
+    },
+    "homepage": "https://github.com/DavidQF555/MAL.js",
+    "devDependencies": {
+        "@types/node": "^16.11.26",
+        "typescript": "^4.4.4",
+        "eslint": "^8.43.0"
+    }
+}
