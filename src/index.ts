@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeListOptions } from './options';
-import { AnimeListResults, AnimeListResultsInstance, ErrorResponse } from './results';
+import { AnimeDetailsOptions, AnimeListOptions, ErrorResponse } from './options';
+import { AnimeData, DetailedAnimeData } from './types';
 
 function handleResponse<D = any>(response: AxiosResponse<any>, map: ((val: any) => D)): (D | ErrorResponse) {
     if(response.status == 200) {
@@ -24,26 +24,50 @@ export class MALClient {
         this.client_id = client_id;
     }
 
-    public getAnimeList(options: AnimeListOptions): Promise<AnimeListResults | ErrorResponse> {
+    public getAnimeList(options: AnimeListOptions): Promise<Array<AnimeData> | ErrorResponse> {
+        const params: object = {
+            q: options.q,
+            limit: options.limit,
+            offset: options.offset,
+        };
+        if(options.fields && options.fields.length > 0) {
+            params['fields'] = options.fields.join(',');
+        }
         return axios.get('https://api.myanimelist.net/v2/anime', {
-            params: options,
+            params: params,
             headers: {
                 'X-MAL-CLIENT-ID': this.client_id
             }
         })
         .then(response => {
             return handleResponse(response, data => {
-                const instances: Array<AnimeListResultsInstance> = [];
+                const instances: Array<AnimeData> = [];
                 for(const obj of data.data) {
-                    const node: AnimeListResultsInstance = obj.node;
+                    const node: AnimeData = obj.node;
                     instances.push(node);
                 }
-                const out: AnimeListResults = {
-                    instances: instances
-                }
-                return out;
+                return instances;
             });
         });
+    }
+
+    public getAnimeDetails(options: AnimeDetailsOptions): Promise<DetailedAnimeData | ErrorResponse> {
+        const params: object = {};
+        if(options.fields && options.fields.length > 0) {
+            params['fields'] = options.fields.join(',');
+        }
+        return axios.get(`https://api.myanimelist.net/v2/anime/${options.id}`, {
+            params: params,
+            headers: {
+                'X-MAL-CLIENT-ID': this.client_id
+            }
+        })
+        .then(response => {
+            return handleResponse(response, data => {
+                const out: DetailedAnimeData = data;
+                return out;
+            })
+        })
     }
 
 }
