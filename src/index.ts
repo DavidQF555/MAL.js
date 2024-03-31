@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeDetailsOptions, AnimeListOptions, ErrorResponse } from './options';
-import { AnimeData, DetailedAnimeData } from './types';
+import { AnimeDetailsOptions, AnimeListOptions, AnimeRankingOptions, ErrorResponse, SeasonalAnimeOptions } from './options';
+import { AnimeData, DetailedAnimeData, RankedAnimeInstance } from './types';
 
 function handleResponse<D = any>(response: AxiosResponse<any>, map: ((val: any) => D)): (D | ErrorResponse) {
     if(response.status == 200) {
@@ -41,11 +41,7 @@ export class MALClient {
         })
         .then(response => {
             return handleResponse(response, data => {
-                const instances: Array<AnimeData> = [];
-                for(const obj of data.data) {
-                    const node: AnimeData = obj.node;
-                    instances.push(node);
-                }
+                const instances: Array<AnimeData> = data.data;
                 return instances;
             });
         });
@@ -69,5 +65,53 @@ export class MALClient {
             })
         })
     }
+
+    public getAnimeRanking(options: AnimeRankingOptions): Promise<Array<RankedAnimeInstance> | ErrorResponse> {
+        const params: object = {
+            ranking_type: options.ranking_type,
+            limit: options.limit,
+            offset: options.offset,
+        };
+        if(options.fields && options.fields.length > 0) {
+            params['fields'] = options.fields.join(',');
+        }
+        return axios.get('https://api.myanimelist.net/v2/anime/ranking', {
+            params: params,
+            headers: {
+                'X-MAL-CLIENT-ID': this.client_id
+            }
+        })
+        .then(response => {
+            return handleResponse(response, data => {
+                const instances: Array<RankedAnimeInstance> = data.data;
+                return instances;
+            })
+        })
+    }
+
+    public getSeasonalAnime(options: SeasonalAnimeOptions): Promise<Array<AnimeData> | ErrorResponse> {
+        const params: object = {
+            sort: options.sort,
+            limit: options.limit,
+            offset: options.offset,
+        };
+        if(options.fields && options.fields.length > 0) {
+            params['fields'] = options.fields.join(',');
+        }
+        return axios.get(`https://api.myanimelist.net/v2/season/${options.year}/${options.season}`, {
+            params: params,
+            headers: {
+                'X-MAL-CLIENT-ID': this.client_id
+            }
+        })
+        .then(response => {
+            return handleResponse(response, data => {
+                const instances: Array<AnimeData> = data.data;
+                return instances;
+            });
+        });
+    }
+
+    // TODO: get suggested anime, requires main_auth
 
 }

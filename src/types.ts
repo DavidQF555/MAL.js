@@ -111,3 +111,13 @@ export interface DetailedAnimeData extends AnimeData {
     recommendations?: Array<Recommendations>;
     statistics?: Statistics;
 }
+
+export interface Ranking {
+    rank: number;
+    previous_rank?: number;
+}
+
+export interface RankedAnimeInstance {
+    node: AnimeData;
+    ranking: Ranking;
+}
