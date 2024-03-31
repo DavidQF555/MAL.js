@@ -121,3 +121,8 @@ export interface RankedAnimeInstance {
     node: AnimeData;
     ranking: Ranking;
 }
+
+export interface AnimeListEntry {
+    node: AnimeData;
+    list_status: ListStatus;
+}

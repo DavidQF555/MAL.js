@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeDetailsOptions, AnimeListOptions, AnimeRankingOptions, ErrorResponse, SeasonalAnimeOptions } from './options';
-import { AnimeData, DetailedAnimeData, RankedAnimeInstance } from './types';
+import { AnimeDetailsOptions, AnimeListOptions, AnimeRankingOptions, ErrorResponse, SeasonalAnimeOptions, UserAnimeListOptions } from './options';
+import { AnimeData, AnimeListEntry, DetailedAnimeData, ListStatus, RankedAnimeInstance } from './types';
 
 function handleResponse<D = any>(response: AxiosResponse<any>, map: ((val: any) => D)): (D | ErrorResponse) {
     if(response.status == 200) {
@@ -98,7 +98,7 @@ export class MALClient {
         if(options.fields && options.fields.length > 0) {
             params['fields'] = options.fields.join(',');
         }
-        return axios.get(`https://api.myanimelist.net/v2/season/${options.year}/${options.season}`, {
+        return axios.get(`https://api.myanimelist.net/v2/anime/season/${options.year}/${options.season}`, {
             params: params,
             headers: {
                 'X-MAL-CLIENT-ID': this.client_id
@@ -112,6 +112,27 @@ export class MALClient {
         });
     }
 
-    // TODO: get suggested anime, requires main_auth
+    public getUserAnimeList(options: UserAnimeListOptions): Promise<Array<AnimeListEntry> | ErrorResponse> {
+        const params: object = {
+            status: options.status,
+            sort: options.sort,
+            limit: options.limit,
+            offset: options.offset,
+        };
+        return axios.get(`https://api.myanimelist.net/v2/users/${options.username}/animelist`, {
+            params: params,
+            headers: {
+                'X-MAL-CLIENT-ID': this.client_id
+            }
+        })
+        .then(response => {
+            return handleResponse(response, data => {
+                const instances: Array<AnimeListEntry> = data.data;
+                return instances;
+            });
+        });
+    }
+
+    
 
 }
