@@ -1,6 +1,20 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { AnimeListOptions } from './options';
 import { AnimeListResults, AnimeListResultsInstance, ErrorResponse } from './results';
+
+function handleResponse<D = any>(response: AxiosResponse<any>, map: ((val: any) => D)): (D | ErrorResponse) {
+    if(response.status == 200) {
+        return map(response.data);
+    }
+    else {
+        const out: ErrorResponse = {
+            status: response.status,
+            error: response.data.error,
+            message: response.data.message
+        }
+        return out;
+    }
+}
 
 export class MALClient {
 
@@ -18,9 +32,9 @@ export class MALClient {
             }
         })
         .then(response => {
-            if(response.status == 200) {
+            return handleResponse(response, data => {
                 const instances: Array<AnimeListResultsInstance> = [];
-                for(const obj of response.data.data) {
+                for(const obj of data.data) {
                     const node: AnimeListResultsInstance = obj.node;
                     instances.push(node);
                 }
@@ -28,15 +42,7 @@ export class MALClient {
                     instances: instances
                 }
                 return out;
-            }
-            else {
-                const out: ErrorResponse = {
-                    status: response.status,
-                    error: response.data.error,
-                    message: response.data.message
-                }
-                return out;
-            }
+            });
         });
     }
 
