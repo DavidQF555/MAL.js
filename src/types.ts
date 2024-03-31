@@ -30,19 +30,19 @@ export interface ListStatus {
 }
 
 export interface RelatedAnime {
-    node: any;
+    node;
     relation_type: 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story';
     relation_type_formatted: string;
 }
 
 export interface RelatedManga {
-    node: any;
+    node;
     relation_type: 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story';
     relation_type_formatted: string;
 }
 
 export interface Recommendations {
-    node: any;
+    node;
     num_recommendations: number;
 }
 
@@ -94,11 +94,11 @@ export interface AnimeData {
     media_type?: 'unknown' | 'tv' | 'ova' | 'movie' | 'special' | 'ona' | 'music';
     status?: 'finished_airing' | 'currently_airing' | 'not_yet_aired';
     my_list_status?: ListStatus;
-    num_episodes?: number; 
+    num_episodes?: number;
     start_season?: Season;
     broadcast?: Broadcast;
     source?: 'other' | 'original' | 'manga' | '4_koma_manga' | 'web_manga' | 'digital_manga' | 'novel' | 'light_novel' | 'visual_novel' | 'game' | 'card_game' | 'book' | 'picture_book' | 'radio' | 'music';
-    average_episode_duration?: number; 
+    average_episode_duration?: number;
     rating?: 'g' | 'pg' | 'pg_13' | 'r' | 'r+' | 'rx';
     studios?: Array<Studio>;
 }
