@@ -40,8 +40,7 @@ export class MALClient {
 			},
 		}).then(response => {
 			return handleResponse(response, data => {
-				const instances: Array<AnimeData> = data.data;
-				return instances;
+				return data.data as Array<AnimeData>;
 			});
 		});
 	}
@@ -58,8 +57,7 @@ export class MALClient {
 			},
 		}).then(response => {
 			return handleResponse(response, data => {
-				const out: DetailedAnimeData = data;
-				return out;
+				return data as DetailedAnimeData;
 			});
 		});
 	}
@@ -80,8 +78,7 @@ export class MALClient {
 			},
 		}).then(response => {
 			return handleResponse(response, data => {
-				const instances: Array<RankedAnimeInstance> = data.data;
-				return instances;
+				return data.data as Array<RankedAnimeInstance>;
 			});
 		});
 	}
@@ -102,8 +99,7 @@ export class MALClient {
 			},
 		}).then(response => {
 			return handleResponse(response, data => {
-				const instances: Array<AnimeData> = data.data;
-				return instances;
+				return data.data as Array<AnimeData>;
 			});
 		});
 	}
@@ -122,11 +118,9 @@ export class MALClient {
 			},
 		}).then(response => {
 			return handleResponse(response, data => {
-				const instances: Array<AnimeListEntry> = data.data;
-				return instances;
+				return data.data as Array<AnimeListEntry>;
 			});
 		});
 	}
-
 
 }
