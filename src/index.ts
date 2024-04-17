@@ -16,7 +16,7 @@ function handleResponse<D>(response: AxiosResponse, map: ((val) => D)): (D | Err
 	}
 }
 
-export class MALClient {
+export default class MALClient {
 
 	private client_id: string;
 
@@ -49,7 +49,11 @@ export class MALClient {
 			headers: this.createHeader(token),
 		}).then(response => {
 			return handleResponse(response, data => {
-				return data.data as Array<AnimeData>;
+				const nodes: Array<AnimeData> = [];
+				for(const val of data.data) {
+					nodes.push(val.node as AnimeData);
+				}
+				return nodes;
 			});
 		});
 	}
@@ -102,7 +106,11 @@ export class MALClient {
 			headers: this.createHeader(token),
 		}).then(response => {
 			return handleResponse(response, data => {
-				return data.data as Array<AnimeData>;
+				const nodes: Array<AnimeData> = [];
+				for(const val of data.data) {
+					nodes.push(val.node as AnimeData);
+				}
+				return nodes;
 			});
 		});
 	}
@@ -120,7 +128,11 @@ export class MALClient {
 			headers: this.createHeader(token),
 		}).then(response => {
 			return handleResponse(response, data => {
-				return data.data as Array<AnimeData>;
+				const nodes: Array<AnimeData> = [];
+				for(const val of data.data) {
+					nodes.push(val.node as AnimeData);
+				}
+				return nodes;
 			});
 		});
 	}

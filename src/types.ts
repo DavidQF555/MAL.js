@@ -30,7 +30,7 @@ export interface ListStatus {
 }
 
 export interface RelatedAnime {
-    node;
+    node: AnimeData;
     relation_type: 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story';
     relation_type_formatted: string;
 }

@@ -2,6 +2,7 @@
     "name": "mal.js",
     "version": "1.0.0",
     "main": "dist/index.js",
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/DavidQF555/MAL.js.git"
