@@ -15,18 +15,18 @@ export interface Genre {
 }
 
 export interface ListStatus {
-    status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
-    score: number;
-    num_episodes_watched: number;
-    is_rewatching: boolean;
+    status: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
+    score?: number;
+    num_episodes_watched?: number;
+    is_rewatching?: boolean;
     start_date?: string;
     finish_date?: string;
-    priority: number;
-    num_times_rewatched: number;
-    rewatch_value: number;
-    tags: Array<string>;
-    comments: string;
-    updated_at: string;
+    priority?: number;
+    num_times_rewatched?: number;
+    rewatch_value?: number;
+    tags?: Array<string>;
+    comments?: string;
+    updated_at?: string;
 }
 
 export interface RelatedAnime {

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, ErrorResponse, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
-import { AnimeData, AnimeListEntry, DetailedAnimeData, FieldedAnimeData, RankedAnimeInstance } from './types';
+import { AnimeData, AnimeListEntry, DetailedAnimeData, FieldedAnimeData, ListStatus, RankedAnimeInstance } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
 function handleResponse<D>(response: AxiosResponse, map: ((val) => D)): (D | ErrorResponse) {
@@ -182,6 +182,21 @@ export default class MALClient {
 			}
 			return nodes;
 		}));
+	}
+
+	public async updateAnimeListStatus(token: string, anime_id: number, status: ListStatus): Promise<ListStatus | ErrorResponse> {
+		return axios.put(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, status, {
+			headers: {
+				...this.createHeader(token),
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+		}).then(response => handleResponse(response, data => data as ListStatus));
+	}
+
+	public async deleteAnimeListItem(token: string, anime_id: number): Promise<void | ErrorResponse> {
+		return axios.delete(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, {
+			headers: this.createHeader(token),
+		}).then(response => handleResponse(response, () => undefined));
 	}
 
 	public async getUserAnimeList(username: string = '@me', options?: UserAnimeListOptions, token?: string): Promise<Array<AnimeListEntry> | ErrorResponse> {
