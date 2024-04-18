@@ -18,3 +18,41 @@ export interface TokenResponse {
     access_token: string;
     refresh_token: string;
 }
+
+export interface AnimeListOptions {
+    q: string;
+    limit?: number;
+    offset?: number;
+    fields?: Array<AnimeField>;
+}
+
+export interface DetailedAnimeOptions {
+    fields?: Array<DetailedAnimeField>;
+}
+
+export interface AnimeRankingOptions {
+    ranking_type: 'all' | 'airing' | 'upcoming' | 'tv' | 'ova' | 'movie' | 'special' | 'bypopularity' | 'favorite';
+    limit?: number;
+    offset?: number;
+    fields?: Array<AnimeField>;
+}
+
+export interface SeasonalAnimeOptions {
+    sort?: 'anime_score' | 'anime_num_list_users';
+    limit?: number;
+    offset?: number;
+    fields?: Array<AnimeField>;
+}
+
+export interface SuggestedAnimeOptions {
+    limit?: number;
+    offset?: number;
+    fields?: Array<AnimeField>;
+}
+
+export interface UserAnimeListOptions {
+    status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
+    sort?: 'list_score' | 'list_updated_at' | 'anime_title' | 'anime_start_date' | 'anime_id';
+    limit?: number;
+    offset?: number;
+}

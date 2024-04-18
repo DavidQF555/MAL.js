@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeField, DetailedAnimeField, ErrorResponse, OAuthRequest, TokenResponse } from './options';
+import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, ErrorResponse, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
 import { AnimeData, AnimeListEntry, DetailedAnimeData, RankedAnimeInstance } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
@@ -62,7 +62,7 @@ export default class MALClient {
 		};
 	}
 
-	public retrieveAuthorizationToken(auth_code: string, verifier: string, redirect_uri?: string): Promise<TokenResponse | ErrorResponse> {
+	public async retrieveAuthorizationToken(auth_code: string, verifier: string, redirect_uri?: string): Promise<TokenResponse | ErrorResponse> {
 		const params: object = {
 			'client_id': this.client_id,
 			'grant_type': 'authorization_code',
@@ -75,13 +75,12 @@ export default class MALClient {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-		})
-			.then(response => handleResponse(response, data => {
-				return data as TokenResponse;
-			}));
+		}).then(response => handleResponse(response, data => {
+			return data as TokenResponse;
+		}));
 	}
 
-	public refreshAuthorizationToken(refresh_token: string): Promise<TokenResponse | ErrorResponse> {
+	public async refreshAuthorizationToken(refresh_token: string): Promise<TokenResponse | ErrorResponse> {
 		const params: object = {
 			'client_id': this.client_id,
 			'client_secret': this.client_secret,
@@ -108,123 +107,90 @@ export default class MALClient {
 		};
 	}
 
-	public getAnimeList(query: string, limit?: number, offset?: number, fields?: Array<AnimeField>, token?: string): Promise<Array<AnimeData> | ErrorResponse> {
-		const params: object = {
-			q: query,
-			limit: limit,
-			offset: offset,
-		};
-		if(fields && fields.length > 0) {
-			params['fields'] = fields.join(',');
+	public async getAnimeList(options: AnimeListOptions, token?: string): Promise<Array<AnimeData> | ErrorResponse> {
+		const params: object = Object.assign({}, options);
+		if(options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
 		}
 		return axios.get('https://api.myanimelist.net/v2/anime', {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => {
-			return handleResponse(response, data => {
-				const nodes: Array<AnimeData> = [];
-				for(const val of data.data) {
-					nodes.push(val.node as AnimeData);
-				}
-				return nodes;
-			});
-		});
+		}).then(response => handleResponse(response, data => {
+			const nodes: Array<AnimeData> = [];
+			for(const val of data.data) {
+				nodes.push(val.node as AnimeData);
+			}
+			return nodes;
+		}));
 	}
 
-	public getAnimeDetails(id: number, fields?: Array<DetailedAnimeField>, token?: string): Promise<DetailedAnimeData | ErrorResponse> {
-		const params: object = {};
-		if(fields && fields.length > 0) {
-			params['fields'] = fields.join(',');
+	public async getAnimeDetails(id: number, options?: DetailedAnimeOptions, token?: string): Promise<DetailedAnimeData | ErrorResponse> {
+		const params: object = options ? Object.assign({}, options) : {};
+		if(options && options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
 		}
 		return axios.get(`https://api.myanimelist.net/v2/anime/${id}`, {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => {
-			return handleResponse(response, data => {
-				return data as DetailedAnimeData;
-			});
-		});
+		}).then(response => handleResponse(response, data => {
+			return data as DetailedAnimeData;
+		}));
 	}
 
-	public getAnimeRanking(ranking_type: 'all' | 'airing' | 'upcoming' | 'tv' | 'ova' | 'movie' | 'special' | 'bypopularity' | 'favorite', limit?: number, offset?: number, fields?: Array<AnimeField>, token?: string): Promise<Array<RankedAnimeInstance> | ErrorResponse> {
-		const params: object = {
-			ranking_type: ranking_type,
-			limit: limit,
-			offset: offset,
-		};
-		if(fields && fields.length > 0) {
-			params['fields'] = fields.join(',');
+	public async getAnimeRanking(options: AnimeRankingOptions, token?: string): Promise<Array<RankedAnimeInstance> | ErrorResponse> {
+		const params: object = Object.assign({}, options);
+		if(options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
 		}
 		return axios.get('https://api.myanimelist.net/v2/anime/ranking', {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => {
-			return handleResponse(response, data => {
-				return data.data as Array<RankedAnimeInstance>;
-			});
-		});
+		}).then(response => handleResponse(response, data => {
+			return data.data as Array<RankedAnimeInstance>;
+		}));
 	}
 
-	public getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', sort?: 'anime_score' | 'anime_num_list_users', limit?: number, offset?: number, fields?: Array<AnimeField>, token?: string): Promise<Array<AnimeData> | ErrorResponse> {
-		const params: object = {
-			sort: sort,
-			limit: limit,
-			offset: offset,
-		};
-		if(fields && fields.length > 0) {
-			params['fields'] = fields.join(',');
+	public async getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', options?: SeasonalAnimeOptions, token?: string): Promise<Array<AnimeData> | ErrorResponse> {
+		const params: object = options ? Object.assign({}, options) : {};
+		if(options && options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
 		}
 		return axios.get(`https://api.myanimelist.net/v2/anime/season/${year}/${season}`, {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => {
-			return handleResponse(response, data => {
-				const nodes: Array<AnimeData> = [];
-				for(const val of data.data) {
-					nodes.push(val.node as AnimeData);
-				}
-				return nodes;
-			});
-		});
+		}).then(response => handleResponse(response, data => {
+			const nodes: Array<AnimeData> = [];
+			for(const val of data.data) {
+				nodes.push(val.node as AnimeData);
+			}
+			return nodes;
+		}));
 	}
 
-	public getSuggestedAnime(token: string, limit?: number, offset?: number, fields?: Array<AnimeField>): Promise<Array<AnimeData> | ErrorResponse> {
-		const params: object = {
-			limit: limit,
-			offset: offset,
-		};
-		if(fields && fields.length > 0) {
-			params['fields'] = fields.join(',');
+	public async getSuggestedAnime(token: string, options?: SuggestedAnimeOptions): Promise<Array<AnimeData> | ErrorResponse> {
+		const params: object = options ? Object.assign({}, options) : {};
+		if(options && options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
 		}
 		return axios.get('https://api.myanimelist.net/v2/anime/suggestions', {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => {
-			return handleResponse(response, data => {
-				const nodes: Array<AnimeData> = [];
-				for(const val of data.data) {
-					nodes.push(val.node as AnimeData);
-				}
-				return nodes;
-			});
-		});
+		}).then(response => handleResponse(response, data => {
+			const nodes: Array<AnimeData> = [];
+			for(const val of data.data) {
+				nodes.push(val.node as AnimeData);
+			}
+			return nodes;
+		}));
 	}
 
-	public getUserAnimeList(username?: string, status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch', sort?: 'list_score' | 'list_updated_at' | 'anime_title' | 'anime_start_date' | 'anime_id', limit?: number, offset?: number, token?: string): Promise<Array<AnimeListEntry> | ErrorResponse> {
-		const params: object = {
-			status: status,
-			sort: sort,
-			limit: limit,
-			offset: offset,
-		};
-		return axios.get(`https://api.myanimelist.net/v2/users/${username || '@me'}/animelist`, {
-			params: params,
+	public async getUserAnimeList(username: string = '@me', options?: UserAnimeListOptions, token?: string): Promise<Array<AnimeListEntry> | ErrorResponse> {
+		return axios.get(`https://api.myanimelist.net/v2/users/${username}/animelist`, {
+			params: options,
 			headers: this.createHeader(token),
-		}).then(response => {
-			return handleResponse(response, data => {
-				return data.data as Array<AnimeListEntry>;
-			});
-		});
+		}).then(response => handleResponse(response, data => {
+			return data.data as Array<AnimeListEntry>;
+		}));
 	}
 
 }
