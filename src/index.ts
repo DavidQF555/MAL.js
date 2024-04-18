@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, ErrorResponse, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
-import { AnimeData, AnimeListEntry, DetailedAnimeData, RankedAnimeInstance } from './types';
+import { AnimeData, AnimeListEntry, DetailedAnimeData, FieldedAnimeData, RankedAnimeInstance } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
 function handleResponse<D>(response: AxiosResponse, map: ((val) => D)): (D | ErrorResponse) {
@@ -107,7 +107,7 @@ export default class MALClient {
 		};
 	}
 
-	public async getAnimeList(options: AnimeListOptions, token?: string): Promise<Array<AnimeData> | ErrorResponse> {
+	public async getAnimeList(options: AnimeListOptions, token?: string): Promise<Array<FieldedAnimeData> | ErrorResponse> {
 		const params: object = Object.assign({}, options);
 		if(options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');
@@ -167,7 +167,7 @@ export default class MALClient {
 		}));
 	}
 
-	public async getSuggestedAnime(token: string, options?: SuggestedAnimeOptions): Promise<Array<AnimeData> | ErrorResponse> {
+	public async getSuggestedAnime(token: string, options?: SuggestedAnimeOptions): Promise<Array<FieldedAnimeData> | ErrorResponse> {
 		const params: object = options ? Object.assign({}, options) : {};
 		if(options && options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');

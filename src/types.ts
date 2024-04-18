@@ -42,7 +42,7 @@ export interface RelatedManga {
 }
 
 export interface Recommendations {
-    node;
+    node: AnimeData;
     num_recommendations: number;
 }
 
@@ -78,6 +78,9 @@ export interface AnimeData {
     id: number;
     title: string;
     main_picture?: Picture;
+}
+
+export interface FieldedAnimeData extends AnimeData {
     alternative_titles?: AlternativeTitles;
     start_date?: string;
     end_date?: string;
@@ -103,7 +106,7 @@ export interface AnimeData {
     studios?: Array<Studio>;
 }
 
-export interface DetailedAnimeData extends AnimeData {
+export interface DetailedAnimeData extends FieldedAnimeData {
     pictures?: Array<Picture>;
     background?: string;
     related_anime?: Array<RelatedAnime>;
@@ -118,7 +121,7 @@ export interface Ranking {
 }
 
 export interface RankedAnimeInstance {
-    node: AnimeData;
+    node: FieldedAnimeData;
     ranking: Ranking;
 }
 
