@@ -36,13 +36,13 @@ export interface RelatedAnime {
 }
 
 export interface RelatedManga {
-    node;
+    node: MangaData;
     relation_type: 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story';
     relation_type_formatted: string;
 }
 
-export interface Recommendations {
-    node: AnimeData;
+export interface Recommendations<T> {
+    node: T;
     num_recommendations: number;
 }
 
@@ -111,7 +111,7 @@ export interface DetailedAnimeData extends FieldedAnimeData {
     background?: string;
     related_anime?: Array<RelatedAnime>;
     related_manga?: Array<RelatedManga>;
-    recommendations?: Array<Recommendations>;
+    recommendations?: Array<Recommendations<AnimeData>>;
     statistics?: Statistics;
 }
 
@@ -120,8 +120,8 @@ export interface Ranking {
     previous_rank?: number;
 }
 
-export interface RankedAnimeInstance {
-    node: FieldedAnimeData;
+export interface RankedInstance<T> {
+    node: T;
     ranking: Ranking;
 }
 
@@ -195,4 +195,75 @@ export interface ForumTopic {
 export interface ForumTopicAuthor {
     id: number;
     name: string;
+}
+
+export interface MangaListStatus {
+    status?: string;
+    score: number;
+    num_volumes_read: number;
+    num_chapters_read: number;
+    is_rereading: boolean;
+    start_date?: string;
+    finish_date?: string;
+    priority: number;
+    num_times_reread: number;
+    reread_value: number;
+    tags: Array<string>;
+    comments: string;
+    updated_at: string;
+}
+
+export interface Author {
+    id: number;
+    first_name: string;
+    last_name: string;
+}
+
+export interface AuthorRole {
+    node: Author;
+    role: string;
+}
+
+export interface Magazine {
+    id: number;
+    name: string;
+}
+
+export interface MagazineRole {
+    node: Magazine;
+    role: string;
+}
+
+export interface MangaData {
+    id: number;
+    title: string;
+    main_picture?: Picture;
+    alternative_titles?: AlternativeTitles;
+    start_date?: string;
+    end_date?: string;
+    synopsis?: string;
+    mean?: number;
+    rank?: number;
+    popularity?: number;
+    num_list_users: number;
+    num_scoring_users: number;
+    nsfw?: 'white' | 'gray' | 'black';
+    genres: Array<Genre>;
+    created_at: string;
+    updated_at: string;
+    media_type: 'unknown' | 'manga' | 'novel' | 'one_shot' | 'doujinshi' | 'manhwa' | 'manhua' | 'oel';
+    status: 'finished' | 'currently_publishing' | 'not_yet_published';
+    my_list_status?: MangaListStatus;
+    num_volumes: number;
+    num_chapters: number;
+    authors: Array<AuthorRole>;
+}
+
+export interface DetailedMangaData extends MangaData {
+    pictures: Array<Picture>;
+    background?: string;
+    related_anime: Array<RelatedAnime>;
+    related_manga: Array<RelatedManga>;
+    recommendations: Array<Recommendations<MangaData>>;
+    serialization: Array<MagazineRole>;
 }

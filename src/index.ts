@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, ErrorResponse, ForumDetailsOptions, ForumTopicOptions, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
-import { AnimeData, AnimeListEntry, DetailedAnimeData, DetailedForumTopic, FieldedAnimeData, ForumBoards, ForumTopic, ListStatus, RankedAnimeInstance } from './types';
+import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, DetailedMangaOptions, ErrorResponse, ForumDetailsOptions, ForumTopicOptions, MangaListOptions, MangaRankingOptions, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
+import { AnimeData, AnimeListEntry, DetailedAnimeData, DetailedForumTopic, DetailedMangaData, FieldedAnimeData, ForumBoards, ForumTopic, ListStatus, MangaData, RankedInstance } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
 function handlePromise<D>(call: Promise<AxiosResponse>, map: ((val) => D)): Promise<D | ErrorResponse> {
@@ -139,7 +139,7 @@ export default class MALClient {
 		}), data => data as DetailedAnimeData);
 	}
 
-	public async getAnimeRanking(options: AnimeRankingOptions, token?: string): Promise<Array<RankedAnimeInstance> | ErrorResponse> {
+	public async getAnimeRanking(options: AnimeRankingOptions, token?: string): Promise<Array<RankedInstance<FieldedAnimeData>> | ErrorResponse> {
 		const params: object = Object.assign({}, options);
 		if(options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');
@@ -147,7 +147,7 @@ export default class MALClient {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime/ranking', {
 			params: params,
 			headers: this.createHeader(token),
-		}), data => data.data as Array<RankedAnimeInstance>);
+		}), data => data.data as Array<RankedInstance<FieldedAnimeData>>);
 	}
 
 	public async getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', options?: SeasonalAnimeOptions, token?: string): Promise<Array<AnimeData> | ErrorResponse> {
@@ -224,6 +224,46 @@ export default class MALClient {
 			params: options,
 			headers: this.createHeader(token),
 		}), data => data.data as Array<ForumTopic>);
+	}
+
+	public async getMangaList(options: MangaListOptions, token?:string): Promise<Array<MangaData> | ErrorResponse> {
+		const params: object = Object.assign({}, options);
+		if(options && options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
+		}
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/manga', {
+			params: params,
+			headers: this.createHeader(token),
+		}), data => {
+			const nodes: Array<MangaData> = [];
+			for(const val of data.data) {
+				nodes.push(val.node as MangaData);
+			}
+			return nodes;
+		});
+	}
+
+	public async getMangaDetails(id: number, options?: DetailedMangaOptions, token?: string): Promise<DetailedMangaData | ErrorResponse> {
+		const params: object = options ? Object.assign({}, options) : {};
+		if(options && options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
+		}
+		return handlePromise(axios.get(`https://api.myanimelist.net/v2/manga/${id}`, {
+			params: params,
+			headers: this.createHeader(token),
+		}), data => data as DetailedMangaData);
+	}
+
+	public async getMangaRanking(options: MangaRankingOptions, token?: string): Promise<Array<RankedInstance<MangaData>> | ErrorResponse> {
+		const params: object = Object.assign({}, options);
+		if(options && options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
+		}
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/manga/ranking', {
+			params: params,
+			headers: this.createHeader(token),
+		}), data => data.data as Array<RankedInstance<MangaData>>);
+
 	}
 
 }
