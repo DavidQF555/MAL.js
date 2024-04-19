@@ -3,18 +3,26 @@ import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, ErrorRespo
 import { AnimeData, AnimeListEntry, DetailedAnimeData, DetailedForumTopic, FieldedAnimeData, ForumBoards, ForumTopic, ListStatus, RankedAnimeInstance } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
-function handleResponse<D>(response: AxiosResponse, map: ((val) => D)): (D | ErrorResponse) {
-	if(response.status == 200) {
-		return map(response.data);
-	}
-	else {
-		const out: ErrorResponse = {
-			status: response.status,
-			error: response.data.error,
-			message: response.data.message,
-		};
-		return out;
-	}
+function handlePromise<D>(call: Promise<AxiosResponse>, map: ((val) => D)): Promise<D | ErrorResponse> {
+	return call
+		.then(response => {
+			return map(response.data);
+		}, error => {
+			if(error.response) {
+				return {
+					status: error.response.status,
+					error: error.response.data.error,
+					message: error.response.data.message,
+				};
+			}
+			else {
+				return {
+					status: 500,
+					error: 'unknown',
+					message: 'error with no response',
+				};
+			}
+		});
 }
 
 function codeVerifier(): string {
@@ -71,13 +79,11 @@ export default class MALClient {
 			'client_secret': this.client_secret,
 			'redirect_uri': redirect_uri,
 		};
-		return axios.post('https://myanimelist.net/v1/oauth2/token', params, {
+		return handlePromise(axios.post('https://myanimelist.net/v1/oauth2/token', params, {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-		}).then(response => handleResponse(response, data => {
-			return data as TokenResponse;
-		}));
+		}), data => data as TokenResponse);
 	}
 
 	public async refreshAuthorizationToken(refresh_token: string): Promise<TokenResponse | ErrorResponse> {
@@ -87,13 +93,11 @@ export default class MALClient {
 			'grant_type': 'refresh_token',
 			'refresh_token': refresh_token,
 		};
-		return axios.post('https://myanimelist.net/v1/oauth2/token', params, {
+		return handlePromise(axios.post('https://myanimelist.net/v1/oauth2/token', params, {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-		}).then(response => handleResponse(response, data => {
-			return data as TokenResponse;
-		}));
+		}), data => data as TokenResponse);
 	}
 
 	private createHeader(token?: string): object {
@@ -112,16 +116,16 @@ export default class MALClient {
 		if(options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');
 		}
-		return axios.get('https://api.myanimelist.net/v2/anime', {
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime', {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => {
+		}), data => {
 			const nodes: Array<AnimeData> = [];
 			for(const val of data.data) {
 				nodes.push(val.node as AnimeData);
 			}
 			return nodes;
-		}));
+		});
 	}
 
 	public async getAnimeDetails(id: number, options?: DetailedAnimeOptions, token?: string): Promise<DetailedAnimeData | ErrorResponse> {
@@ -129,12 +133,10 @@ export default class MALClient {
 		if(options && options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');
 		}
-		return axios.get(`https://api.myanimelist.net/v2/anime/${id}`, {
+		return handlePromise(axios.get(`https://api.myanimelist.net/v2/anime/${id}`, {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => {
-			return data as DetailedAnimeData;
-		}));
+		}), data => data as DetailedAnimeData);
 	}
 
 	public async getAnimeRanking(options: AnimeRankingOptions, token?: string): Promise<Array<RankedAnimeInstance> | ErrorResponse> {
@@ -142,12 +144,10 @@ export default class MALClient {
 		if(options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');
 		}
-		return axios.get('https://api.myanimelist.net/v2/anime/ranking', {
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime/ranking', {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => {
-			return data.data as Array<RankedAnimeInstance>;
-		}));
+		}), data => data.data as Array<RankedAnimeInstance>);
 	}
 
 	public async getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', options?: SeasonalAnimeOptions, token?: string): Promise<Array<AnimeData> | ErrorResponse> {
@@ -155,16 +155,16 @@ export default class MALClient {
 		if(options && options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');
 		}
-		return axios.get(`https://api.myanimelist.net/v2/anime/season/${year}/${season}`, {
+		return handlePromise(axios.get(`https://api.myanimelist.net/v2/anime/season/${year}/${season}`, {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => {
+		}), data => {
 			const nodes: Array<AnimeData> = [];
 			for(const val of data.data) {
 				nodes.push(val.node as AnimeData);
 			}
 			return nodes;
-		}));
+		});
 	}
 
 	public async getSuggestedAnime(token: string, options?: SuggestedAnimeOptions): Promise<Array<FieldedAnimeData> | ErrorResponse> {
@@ -172,60 +172,58 @@ export default class MALClient {
 		if(options && options.fields && options.fields.length > 0) {
 			params['fields'] = options.fields.join(',');
 		}
-		return axios.get('https://api.myanimelist.net/v2/anime/suggestions', {
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime/suggestions', {
 			params: params,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => {
+		}), data => {
 			const nodes: Array<AnimeData> = [];
 			for(const val of data.data) {
 				nodes.push(val.node as AnimeData);
 			}
 			return nodes;
-		}));
+		});
 	}
 
 	public async updateAnimeListStatus(token: string, anime_id: number, status: ListStatus): Promise<ListStatus | ErrorResponse> {
-		return axios.put(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, status, {
+		return handlePromise(axios.put(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, status, {
 			headers: {
 				...this.createHeader(token),
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-		}).then(response => handleResponse(response, data => data as ListStatus));
+		}), data => data as ListStatus);
 	}
 
 	public async deleteAnimeListItem(token: string, anime_id: number): Promise<void | ErrorResponse> {
-		return axios.delete(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, {
+		return handlePromise(axios.delete(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, {
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, () => undefined));
+		}), () => undefined);
 	}
 
 	public async getUserAnimeList(username: string = '@me', options?: UserAnimeListOptions, token?: string): Promise<Array<AnimeListEntry> | ErrorResponse> {
-		return axios.get(`https://api.myanimelist.net/v2/users/${username}/animelist`, {
+		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/animelist`, {
 			params: options,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => {
-			return data.data as Array<AnimeListEntry>;
-		}));
+		}), data => data.data as Array<AnimeListEntry>);
 	}
 
 	public async getForumBoard(token?: string): Promise<ForumBoards | ErrorResponse> {
-		return axios.get('https://api.myanimelist.net/v2/forum/boards', {
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/forum/boards', {
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => data as ForumBoards));
+		}), data => data as ForumBoards);
 	}
 
 	public async getForumTopicDetails(topic_id: number, options?: ForumDetailsOptions, token?: string): Promise<Array<DetailedForumTopic> | ErrorResponse> {
-		return axios.get(`https://api.myanimelist.net/v2/forum/topic/${topic_id}`, {
+		return handlePromise(axios.get(`https://api.myanimelist.net/v2/forum/topic/${topic_id}`, {
 			params: options,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => data.data as Array<DetailedForumTopic>));
+		}), data => data.data as Array<DetailedForumTopic>);
 	}
 
 	public async getForumTopics(options: ForumTopicOptions, token?: string): Promise<Array<ForumTopic> | ErrorResponse> {
-		return axios.get('https://api.myanimelist.net/v2/forum/topics', {
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/forum/topics', {
 			params: options,
 			headers: this.createHeader(token),
-		}).then(response => handleResponse(response, data => data.data as Array<ForumTopic>));
+		}), data => data.data as Array<ForumTopic>);
 	}
 
 }
