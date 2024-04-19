@@ -4,7 +4,7 @@ export type DetailedAnimeField = 'id' | 'title' | 'main_picture' | 'alternative_
 export interface ErrorResponse {
     status: number;
     error: string;
-    message: string;
+    message?: string;
 }
 
 export interface OAuthRequest {
@@ -55,4 +55,20 @@ export interface UserAnimeListOptions {
     sort?: 'list_score' | 'list_updated_at' | 'anime_title' | 'anime_start_date' | 'anime_id';
     limit?: number;
     offset?: number;
+}
+
+export interface ForumDetailsOptions {
+    limit?: number;
+    offset?: number;
+}
+
+export interface ForumTopicOptions {
+    board_id?: number;
+    subboard_id?: number;
+    limit?: number;
+    offset?: number;
+    sort?: 'recent';
+    q?: string;
+    topic_user_name?: string;
+    user_name?: string;
 }

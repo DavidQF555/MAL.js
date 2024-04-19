@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, ErrorResponse, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
-import { AnimeData, AnimeListEntry, DetailedAnimeData, FieldedAnimeData, ListStatus, RankedAnimeInstance } from './types';
+import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, ErrorResponse, ForumDetailsOptions, ForumTopicOptions, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
+import { AnimeData, AnimeListEntry, DetailedAnimeData, DetailedForumTopic, FieldedAnimeData, ForumBoards, ForumTopic, ListStatus, RankedAnimeInstance } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
 function handleResponse<D>(response: AxiosResponse, map: ((val) => D)): (D | ErrorResponse) {
@@ -206,6 +206,26 @@ export default class MALClient {
 		}).then(response => handleResponse(response, data => {
 			return data.data as Array<AnimeListEntry>;
 		}));
+	}
+
+	public async getForumBoard(token?: string): Promise<ForumBoards | ErrorResponse> {
+		return axios.get('https://api.myanimelist.net/v2/forum/boards', {
+			headers: this.createHeader(token),
+		}).then(response => handleResponse(response, data => data as ForumBoards));
+	}
+
+	public async getForumTopicDetails(topic_id: number, options?: ForumDetailsOptions, token?: string): Promise<Array<DetailedForumTopic> | ErrorResponse> {
+		return axios.get(`https://api.myanimelist.net/v2/forum/topic/${topic_id}`, {
+			params: options,
+			headers: this.createHeader(token),
+		}).then(response => handleResponse(response, data => data.data as Array<DetailedForumTopic>));
+	}
+
+	public async getForumTopics(options: ForumTopicOptions, token?: string): Promise<Array<ForumTopic> | ErrorResponse> {
+		return axios.get('https://api.myanimelist.net/v2/forum/topics', {
+			params: options,
+			headers: this.createHeader(token),
+		}).then(response => handleResponse(response, data => data.data as Array<ForumTopic>));
 	}
 
 }

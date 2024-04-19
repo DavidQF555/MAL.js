@@ -129,3 +129,70 @@ export interface AnimeListEntry {
     node: AnimeData;
     list_status: ListStatus;
 }
+
+export interface ForumBoards {
+    title: string;
+    boards: Array<ForumBoard>
+}
+
+export interface ForumBoard {
+    id: number;
+    title: string;
+    description: string;
+    subboards: Array<ForumSubboard>;
+}
+
+export interface ForumSubboard {
+    id: number;
+    title: string;
+}
+
+export interface DetailedForumTopic {
+    title: string;
+    posts: Array<ForumPost>;
+    poll?: Array<ForumTopicPoll>;
+}
+
+export interface ForumPost {
+    id: number;
+    number: number;
+    created_at: string;
+    created_by: ForumPostAuthor;
+    body: string;
+    signature: string;
+}
+
+export interface ForumPostAuthor {
+    id: number;
+    name: string;
+    forum_avator: string;
+}
+
+export interface ForumTopicPoll {
+    id: number;
+    question: string;
+    close: boolean;
+    options: Array<ForumTopicPollOption>
+}
+
+export interface ForumTopicPollOption {
+    id: number;
+    text: string;
+    votes: number;
+}
+
+export interface ForumTopic {
+    id: number;
+    title: string;
+    created_at: string;
+    created_by: ForumTopicAuthor;
+    number_of_posts: number;
+    last_post_created_at: string;
+    last_post_created_by: ForumTopicAuthor;
+    is_locked: boolean;
+}
+
+export interface ForumTopicAuthor {
+    id: number;
+    name: string;
+}
