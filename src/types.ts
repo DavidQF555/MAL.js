@@ -14,7 +14,7 @@ export interface Genre {
     name: string;
 }
 
-export interface ListStatus {
+export interface AnimeListStatus {
     status: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
     score?: number;
     num_episodes_watched?: number;
@@ -29,14 +29,8 @@ export interface ListStatus {
     updated_at?: string;
 }
 
-export interface RelatedAnime {
-    node: AnimeData;
-    relation_type: 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story';
-    relation_type_formatted: string;
-}
-
-export interface RelatedManga {
-    node: MangaData;
+export interface Related<T> {
+    node: T;
     relation_type: 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story';
     relation_type_formatted: string;
 }
@@ -73,14 +67,10 @@ export interface Statistics {
     num_list_users: number;
     status: Status;
 }
-
-export interface AnimeData {
+export interface Anime {
     id: number;
     title: string;
     main_picture?: Picture;
-}
-
-export interface FieldedAnimeData extends AnimeData {
     alternative_titles?: AlternativeTitles;
     start_date?: string;
     end_date?: string;
@@ -96,7 +86,7 @@ export interface FieldedAnimeData extends AnimeData {
     updated_at?: string;
     media_type?: 'unknown' | 'tv' | 'ova' | 'movie' | 'special' | 'ona' | 'music';
     status?: 'finished_airing' | 'currently_airing' | 'not_yet_aired';
-    my_list_status?: ListStatus;
+    my_list_status?: AnimeListStatus;
     num_episodes?: number;
     start_season?: Season;
     broadcast?: Broadcast;
@@ -106,12 +96,12 @@ export interface FieldedAnimeData extends AnimeData {
     studios?: Array<Studio>;
 }
 
-export interface DetailedAnimeData extends FieldedAnimeData {
+export interface DetailedAnime extends Anime {
     pictures?: Array<Picture>;
     background?: string;
-    related_anime?: Array<RelatedAnime>;
-    related_manga?: Array<RelatedManga>;
-    recommendations?: Array<Recommendations<AnimeData>>;
+    related_anime?: Array<Related<Anime>>;
+    related_manga?: Array<Related<Manga>>;
+    recommendations?: Array<Recommendations<Anime>>;
     statistics?: Statistics;
 }
 
@@ -126,8 +116,8 @@ export interface RankedInstance<T> {
 }
 
 export interface AnimeListEntry {
-    node: AnimeData;
-    list_status: ListStatus;
+    node: Anime;
+    list_status: AnimeListStatus;
 }
 
 export interface ForumBoards {
@@ -234,7 +224,7 @@ export interface MagazineRole {
     role: string;
 }
 
-export interface MangaData {
+export interface Manga {
     id: number;
     title: string;
     main_picture?: Picture;
@@ -259,11 +249,11 @@ export interface MangaData {
     authors: Array<AuthorRole>;
 }
 
-export interface DetailedMangaData extends MangaData {
+export interface DetailedManga extends Manga {
     pictures: Array<Picture>;
     background?: string;
-    related_anime: Array<RelatedAnime>;
-    related_manga: Array<RelatedManga>;
-    recommendations: Array<Recommendations<MangaData>>;
+    related_anime: Array<Related<Anime>>;
+    related_manga: Array<Related<Manga>>;
+    recommendations: Array<Recommendations<Manga>>;
     serialization: Array<MagazineRole>;
 }
