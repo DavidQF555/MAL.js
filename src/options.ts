@@ -22,6 +22,7 @@ export interface AnimeListOptions {
     q: string;
     limit?: number;
     offset?: number;
+    nsfw?: boolean;
     fields?: AnimeFields;
 }
 
@@ -36,6 +37,9 @@ export interface AnimeRankingOptions {
     fields?: AnimeFields;
 }
 
+/*
+Not sure if has a NSFW parameter
+*/
 export interface SeasonalAnimeOptions {
     sort?: 'anime_score' | 'anime_num_list_users';
     limit?: number;
@@ -43,6 +47,9 @@ export interface SeasonalAnimeOptions {
     fields?: AnimeFields;
 }
 
+/*
+Not sure if has a NSFW parameter
+*/
 export interface SuggestedAnimeOptions {
     limit?: number;
     offset?: number;
@@ -68,6 +75,7 @@ export interface UserAnimeListOptions {
     sort?: 'list_score' | 'list_updated_at' | 'anime_title' | 'anime_start_date' | 'anime_id';
     limit?: number;
     offset?: number;
+    nsfw?: boolean;
     fields?: UserAnimeListFields;
 }
 
@@ -91,6 +99,7 @@ export interface MangaListOptions {
     q: string;
     limit?: number;
     offset?: number;
+    nsfw?: boolean;
     fields?: MangaFields;
 }
 
@@ -125,6 +134,7 @@ export interface UserMangaListOptions {
     sort?: 'list_score' | 'list_updated_at' | 'manga_title' | 'manga_start_date' | 'manga_id';
     limit?: number;
     offset?: number;
+    nsfw?: boolean;
     fields?: UserMangaListFields;
 }
 
