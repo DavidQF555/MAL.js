@@ -1,3 +1,25 @@
+import { ErrorResponse } from './options';
+
+export interface Holder<T> {
+    node: T;
+}
+
+export interface Paged<T> {
+    data: Array<T>,
+    previous?: () => Promise<Paged<T> | ErrorResponse>;
+    next?: () => Promise<Paged<T> | ErrorResponse>;
+}
+
+export interface Paging {
+    previous?: string;
+    next?: string;
+}
+
+export interface PagedResponse<T> {
+    data: Array<T>;
+    paging: Paging;
+}
+
 export interface Picture {
     medium?: string;
     large?: string;
@@ -29,14 +51,12 @@ export interface AnimeListStatus {
     updated_at?: string;
 }
 
-export interface Related<T> {
-    node: T;
+export interface Related<T> extends Holder<T> {
     relation_type: 'sequel' | 'prequel' | 'alternative_setting' | 'alternative_version' | 'side_story' | 'parent_story' | 'summary' | 'full_story';
     relation_type_formatted: string;
 }
 
-export interface Recommendations<T> {
-    node: T;
+export interface Recommendations<T> extends Holder<T> {
     num_recommendations: number;
 }
 
@@ -110,13 +130,11 @@ export interface Ranking {
     previous_rank?: number;
 }
 
-export interface RankedInstance<T> {
-    node: T;
+export interface RankedInstance<T> extends Holder<T> {
     ranking: Ranking;
 }
 
-export interface AnimeListEntry {
-    node: Anime;
+export interface AnimeListEntry extends Holder<Anime> {
     list_status: AnimeListStatus;
 }
 
@@ -209,8 +227,7 @@ export interface Author {
     last_name: string;
 }
 
-export interface AuthorRole {
-    node: Author;
+export interface AuthorRole extends Holder<Author> {
     role: string;
 }
 
@@ -219,8 +236,7 @@ export interface Magazine {
     name: string;
 }
 
-export interface MagazineRole {
-    node: Magazine;
+export interface MagazineRole extends Holder<Magazine> {
     role: string;
 }
 
