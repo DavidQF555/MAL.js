@@ -37,7 +37,7 @@ export interface Genre {
 }
 
 export interface AnimeListStatus {
-    status: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
+    status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
     score?: number;
     num_episodes_watched?: number;
     is_rewatching?: boolean;
@@ -87,6 +87,7 @@ export interface Statistics {
     num_list_users: number;
     status: Status;
 }
+
 export interface Anime {
     id: number;
     title: string;
@@ -206,19 +207,19 @@ export interface ForumTopicAuthor {
 }
 
 export interface MangaListStatus {
-    status?: string;
-    score: number;
-    num_volumes_read: number;
-    num_chapters_read: number;
-    is_rereading: boolean;
+    status?: 'reading' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_read';
+    score?: number;
+    num_volumes_read?: number;
+    num_chapters_read?: number;
+    is_rereading?: boolean;
     start_date?: string;
     finish_date?: string;
-    priority: number;
-    num_times_reread: number;
-    reread_value: number;
-    tags: Array<string>;
-    comments: string;
-    updated_at: string;
+    priority?: number;
+    num_times_reread?: number;
+    reread_value?: number;
+    tags?: Array<string>;
+    comments?: string;
+    updated_at?: string;
 }
 
 export interface Author {
@@ -251,31 +252,31 @@ export interface Manga {
     mean?: number;
     rank?: number;
     popularity?: number;
-    num_list_users: number;
-    num_scoring_users: number;
+    num_list_users?: number;
+    num_scoring_users?: number;
     nsfw?: 'white' | 'gray' | 'black';
-    genres: Array<Genre>;
-    created_at: string;
-    updated_at: string;
-    media_type: 'unknown' | 'manga' | 'novel' | 'one_shot' | 'doujinshi' | 'manhwa' | 'manhua' | 'oel';
-    status: 'finished' | 'currently_publishing' | 'not_yet_published';
+    genres?: Array<Genre>;
+    created_at?: string;
+    updated_at?: string;
+    media_type?: 'unknown' | 'manga' | 'novel' | 'one_shot' | 'doujinshi' | 'manhwa' | 'manhua' | 'oel';
+    status?: 'finished' | 'currently_publishing' | 'not_yet_published';
     my_list_status?: MangaListStatus;
-    num_volumes: number;
-    num_chapters: number;
-    authors: Array<AuthorRole>;
+    num_volumes?: number;
+    num_chapters?: number;
+    authors?: Array<AuthorRole>;
 }
 
 export interface DetailedManga extends Manga {
-    pictures: Array<Picture>;
+    pictures?: Array<Picture>;
     background?: string;
-    related_anime: Array<Related<Anime>>;
-    related_manga: Array<Related<Manga>>;
-    recommendations: Array<Recommendations<Manga>>;
-    serialization: Array<MagazineRole>;
+    related_anime?: Array<Related<Anime>>;
+    related_manga?: Array<Related<Manga>>;
+    recommendations?: Array<Recommendations<Manga>>;
+    serialization?: Array<MagazineRole>;
 }
 
 export interface MangaListEntry extends Holder<Manga> {
-    list_status: MangaListStatus;
+    list_status?: MangaListStatus;
 }
 
 export interface AnimeStatistics {

@@ -49,6 +49,20 @@ export interface SuggestedAnimeOptions {
     fields?: AnimeFields;
 }
 
+export interface UpdateAnimeListOptions {
+    status: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
+    score?: number;
+    num_episodes_watched?: number;
+    is_rewatching?: boolean;
+    start_date?: string;
+    finish_date?: string;
+    priority?: number;
+    num_times_rewatched?: number;
+    rewatch_value?: number;
+    tags?: Array<string>;
+    comments?: string;
+}
+
 export interface UserAnimeListOptions {
     status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
     sort?: 'list_score' | 'list_updated_at' | 'anime_title' | 'anime_start_date' | 'anime_id';
@@ -89,6 +103,21 @@ export interface MangaRankingOptions {
     limit?: number;
     offset?: number;
     fields?: MangaFields;
+}
+
+export interface UpdateMangaListOptions {
+    status: 'reading' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_read';
+    score?: number;
+    num_volumes_read?: number;
+    num_chapters_read?: number;
+    is_rereading?: boolean;
+    start_date?: string;
+    finish_date?: string;
+    priority?: number;
+    num_times_reread?: number;
+    reread_value?: number;
+    tags?: Array<string>;
+    comments?: string;
 }
 
 export interface UserMangaListOptions {

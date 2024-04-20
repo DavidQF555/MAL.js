@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, DetailedMangaOptions, ErrorResponse, ForumDetailsOptions, ForumTopicOptions, MangaListOptions, MangaRankingOptions, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions, UserInfoOptions, UserMangaListOptions } from './options';
+import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, DetailedMangaOptions, ErrorResponse, ForumDetailsOptions, ForumTopicOptions, MangaListOptions, MangaRankingOptions, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UpdateAnimeListOptions, UpdateMangaListOptions, UserAnimeListOptions, UserInfoOptions, UserMangaListOptions } from './options';
 import { Anime, AnimeListEntry, AnimeListStatus, DetailedAnime, DetailedForumTopic, DetailedManga, ForumBoards, ForumTopic, Holder, Manga, MangaListEntry, MangaListStatus, Paged, PagedResponse, RankedInstance, UserInfo } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
@@ -224,7 +224,7 @@ export default class MALClient {
 		});
 	}
 
-	public async updateAnimeListStatus(token: string, anime_id: number, status: AnimeListStatus): Promise<AnimeListStatus | ErrorResponse> {
+	public async updateAnimeListStatus(token: string, anime_id: number, status: UpdateAnimeListOptions): Promise<AnimeListStatus | ErrorResponse> {
 		return handlePromise(axios.put(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, status, {
 			headers: {
 				...this.createHeader(token),
@@ -312,7 +312,7 @@ export default class MALClient {
 		}), data => this.createPaged(data, val => val as Array<RankedInstance<Manga>>, token));
 	}
 
-	public async updateMangaListStatus(token: string, manga_id: number, status: MangaListStatus): Promise<MangaListStatus | ErrorResponse> {
+	public async updateMangaListStatus(token: string, manga_id: number, status: UpdateMangaListOptions): Promise<MangaListStatus | ErrorResponse> {
 		return handlePromise(axios.put(`https://api.myanimelist.net/v2/manga/${manga_id}/my_list_status`, status, {
 			headers: {
 				...this.createHeader(token),
