@@ -1,14 +1,15 @@
 {
     "name": "mal.js",
     "version": "1.0.0",
-    "main": "dist/index.js",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "type": "module",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/DavidQF555/MAL.js.git"
     },
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --declaration",
         "lint": "eslint . --ext .ts --fix"
     },
     "author": "DavidQF555",
