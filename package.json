@@ -5,6 +5,12 @@
     "types": "./dist/index.d.ts",
     "files": ["./dist"],
     "type": "module",
+    "description": "Wrapper for the MyAnimeList API",
+    "keywords": [
+        "MyAnimeList",
+        "TypeScript",
+        "wrapper"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/DavidQF555/MAL.js.git"
