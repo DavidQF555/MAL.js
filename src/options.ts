@@ -1,10 +1,4 @@
-export type AnimeField = 'id' | 'title' | 'main_picture' | 'alternative_titles' | 'start_date' | 'end_date' | 'synopsis' | 'mean' | 'rank' | 'popularity' | 'num_list_users' | 'num_scoring_users' | 'nsfw' | 'genres' | 'created_at' | 'updated_at' | 'media_type' | 'status' | 'my_list_status' | 'num_episodes' | 'start_season' | 'broadcast' | 'source' | 'average_episode_duration' | 'rating' | 'studios';
-export type DetailedAnimeField = 'id' | 'title' | 'main_picture' | 'alternative_titles' | 'start_date' | 'end_date' | 'synopsis' | 'mean' | 'rank' | 'popularity' | 'num_list_users' | 'num_scoring_users' | 'nsfw' | 'genres' | 'created_at' | 'updated_at' | 'media_type' | 'status' | 'my_list_status' | 'num_episodes' | 'start_season' | 'broadcast' | 'source' | 'average_episode_duration' | 'rating' | 'studios' | 'pictures' | 'background' | 'related_anime' | 'related_manga' | 'recommendations' | 'statistics'
-
-export type MangaField = 'id' | 'title' | 'main_picture' | 'alternative_titles' | 'start_date' | 'end_date' | 'synopsis' | 'mean' | 'rank' | 'popularity' | 'num_list_users' | 'num_scoring_users' | 'nsfw' | 'genres' | 'created_at' | 'updated_at' | 'media_type' | 'status' | 'my_list_status' | 'num_volumes' | 'num_chapters' | 'authors';
-export type DetailedMangaField = 'id' | 'title' | 'main_picture' | 'alternative_titles' | 'start_date' | 'end_date' | 'synopsis' | 'mean' | 'rank' | 'popularity' | 'num_list_users' | 'num_scoring_users' | 'nsfw' | 'genres' | 'created_at' | 'updated_at' | 'media_type' | 'status' | 'my_list_status' | 'num_volumes' | 'num_chapters' | 'authors' | 'pictures' | 'background' | 'related_anime' | 'related_manga' | 'recommendations' | 'serialization';
-
-export type UserField = 'id' | 'name' | 'picture' | 'gender' | 'birthday' | 'location' | 'joined_at' | 'anime_statistics' | 'time_zone' | 'is_supported';
+import { AnimeFields, DetailedAnimeFields, DetailedMangaFields, MangaFields, UserInfoFields } from './fields';
 
 export interface ErrorResponse {
     status: number;
@@ -28,31 +22,31 @@ export interface AnimeListOptions {
     q: string;
     limit?: number;
     offset?: number;
-    fields?: Array<AnimeField>;
+    fields?: AnimeFields;
 }
 
 export interface DetailedAnimeOptions {
-    fields?: Array<DetailedAnimeField>;
+    fields?: DetailedAnimeFields;
 }
 
 export interface AnimeRankingOptions {
     ranking_type: 'all' | 'airing' | 'upcoming' | 'tv' | 'ova' | 'movie' | 'special' | 'bypopularity' | 'favorite';
     limit?: number;
     offset?: number;
-    fields?: Array<AnimeField>;
+    fields?: AnimeFields;
 }
 
 export interface SeasonalAnimeOptions {
     sort?: 'anime_score' | 'anime_num_list_users';
     limit?: number;
     offset?: number;
-    fields?: Array<AnimeField>;
+    fields?: AnimeFields;
 }
 
 export interface SuggestedAnimeOptions {
     limit?: number;
     offset?: number;
-    fields?: Array<AnimeField>;
+    fields?: AnimeFields;
 }
 
 export interface UserAnimeListOptions {
@@ -82,18 +76,18 @@ export interface MangaListOptions {
     q: string;
     limit?: number;
     offset?: number;
-    fields?: Array<MangaField>
+    fields?: MangaFields;
 }
 
 export interface DetailedMangaOptions {
-    fields?: Array<DetailedMangaField>;
+    fields?: DetailedMangaFields;
 }
 
 export interface MangaRankingOptions {
     ranking_type: 'all' | 'manga' | 'novels' | 'oneshots' | 'doujin' | 'manhwa' | 'manhua' | 'bypopularity' | 'favorite';
     limit?: number;
     offset?: number;
-    fields?: Array<MangaField>;
+    fields?: MangaFields;
 }
 
 export interface UserMangaListOptions {
@@ -104,5 +98,5 @@ export interface UserMangaListOptions {
 }
 
 export interface UserInfoOptions {
-    fields?: Array<UserField>
+    fields?: UserInfoFields;
 }
