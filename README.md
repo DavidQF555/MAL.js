@@ -1,5 +1,5 @@
 # MAL.js
-A strong-typed TypeScript wrapper for the official [MyAnimeList](https://myanimelist.net/) API. The documentation for the API can be found [here](https://myanimelist.net/apiconfig/references/api/v2). There is support for every documented endpoint and [authenticating](https://myanimelist.net/apiconfig/references/authorization) users. 
+A strong-typed TypeScript wrapper for the official [MyAnimeList](https://myanimelist.net/) API. 
 
 ## Installation
 ```
@@ -8,7 +8,11 @@ npm install @davidqf555/mal.js
 
 ## Usage
 
-#### Example
+The documentation for the API can be found [here](https://myanimelist.net/apiconfig/references/api/v2). There is support for every documented endpoint and [authenticating](https://myanimelist.net/apiconfig/references/authorization) users. 
+
+A client ID can be registered [here](https://myanimelist.net/apiconfig). 
+
+### Example
 ```js
 import MALClient from '@davidqf555/mal.js';
 
