@@ -1,4 +1,4 @@
-import { AnimeFields, DetailedAnimeFields, DetailedMangaFields, MangaFields, UserInfoFields } from './fields';
+import { AnimeFields, DetailedAnimeFields, DetailedMangaFields, MangaFields, UserAnimeListFields, UserInfoFields, UserMangaListFields } from './fields';
 
 export interface ErrorResponse {
     status: number;
@@ -54,6 +54,7 @@ export interface UserAnimeListOptions {
     sort?: 'list_score' | 'list_updated_at' | 'anime_title' | 'anime_start_date' | 'anime_id';
     limit?: number;
     offset?: number;
+    fields?: UserAnimeListFields;
 }
 
 export interface ForumDetailsOptions {
@@ -95,6 +96,7 @@ export interface UserMangaListOptions {
     sort?: 'list_score' | 'list_updated_at' | 'manga_title' | 'manga_start_date' | 'manga_id';
     limit?: number;
     offset?: number;
+    fields?: UserMangaListFields;
 }
 
 export interface UserInfoOptions {

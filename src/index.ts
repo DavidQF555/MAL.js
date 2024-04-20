@@ -66,8 +66,7 @@ export default class MALClient {
 		this.client_secret = client_secret;
 	}
 
-	public requestAuth(redirect_uri?: string, state?: string): OAuthRequest {
-		const verifier: string = codeVerifier();
+	public requestAuthorization(verifier: string = codeVerifier(), redirect_uri?: string, state?: string): OAuthRequest {
 		const params: ParsedUrlQuery = {
 			'response_type': 'code',
 			'client_id': this.client_id,
@@ -241,16 +240,20 @@ export default class MALClient {
 	}
 
 	public async getUserAnimeList(username: string = '@me', options?: UserAnimeListOptions, token?: string): Promise<Paged<AnimeListEntry> | ErrorResponse> {
+		const params: object = options ? Object.assign({}, options) : {};
+		if(options && options.fields) {
+			params['fields'] = parseFields(options.fields);
+		}
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/animelist`, {
-			params: options,
+			params: params,
 			headers: this.createHeader(token),
 		}), data => this.createPaged(data, val => val as Array<AnimeListEntry>, token));
 	}
 
-	public async getForumBoard(token?: string): Promise<ForumBoards | ErrorResponse> {
+	public async getForumBoards(token?: string): Promise<Array<ForumBoards> | ErrorResponse> {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/forum/boards', {
 			headers: this.createHeader(token),
-		}), data => data as ForumBoards);
+		}), data => data.categories as Array<ForumBoards>);
 	}
 
 	public async getForumTopicDetails(topic_id: number, options?: ForumDetailsOptions, token?: string): Promise<Paged<DetailedForumTopic> | ErrorResponse> {
@@ -325,8 +328,12 @@ export default class MALClient {
 	}
 
 	public async getUserMangaList(username: string = '@me', options?: UserMangaListOptions, token?: string): Promise<Paged<MangaListEntry> | ErrorResponse> {
+		const params: object = options ? Object.assign({}, options) : {};
+		if(options && options.fields) {
+			params['fields'] = parseFields(options.fields);
+		}
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/mangalist`, {
-			params: options,
+			params: params,
 			headers: this.createHeader(token),
 		}), data => this.createPaged(data, val => val as Array<MangaListEntry>, token));
 	}

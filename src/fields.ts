@@ -1,3 +1,7 @@
+export interface UserAnimeListFields extends AnimeFields {
+    list_status?: boolean | AnimeListStatusFields;
+}
+
 export interface AnimeListStatusFields {
     status?: boolean;
     score?: boolean;
@@ -14,9 +18,6 @@ export interface AnimeListStatusFields {
 }
 
 export interface AnimeFields {
-    id?: boolean;
-    title?: boolean;
-    main_picture?: boolean;
     alternative_titles?: boolean;
     start_date?: boolean;
     end_date?: boolean;
@@ -51,6 +52,10 @@ export interface DetailedAnimeFields extends AnimeFields {
     statistics?: boolean;
 }
 
+export interface UserMangaListFields extends MangaFields {
+    list_status?: boolean | MangaListStatusFields;
+}
+
 export interface MangaListStatusFields {
     status?: boolean;
     score?: boolean;
@@ -68,9 +73,6 @@ export interface MangaListStatusFields {
 }
 
 export interface MangaFields {
-    id?: boolean;
-    title?: boolean;
-    main_picture?: boolean;
     alternative_titles?: boolean;
     start_date?: boolean;
     end_date?: boolean;
