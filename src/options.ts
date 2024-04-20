@@ -4,6 +4,8 @@ export type DetailedAnimeField = 'id' | 'title' | 'main_picture' | 'alternative_
 export type MangaField = 'id' | 'title' | 'main_picture' | 'alternative_titles' | 'start_date' | 'end_date' | 'synopsis' | 'mean' | 'rank' | 'popularity' | 'num_list_users' | 'num_scoring_users' | 'nsfw' | 'genres' | 'created_at' | 'updated_at' | 'media_type' | 'status' | 'my_list_status' | 'num_volumes' | 'num_chapters' | 'authors';
 export type DetailedMangaField = 'id' | 'title' | 'main_picture' | 'alternative_titles' | 'start_date' | 'end_date' | 'synopsis' | 'mean' | 'rank' | 'popularity' | 'num_list_users' | 'num_scoring_users' | 'nsfw' | 'genres' | 'created_at' | 'updated_at' | 'media_type' | 'status' | 'my_list_status' | 'num_volumes' | 'num_chapters' | 'authors' | 'pictures' | 'background' | 'related_anime' | 'related_manga' | 'recommendations' | 'serialization';
 
+export type UserField = 'id' | 'name' | 'picture' | 'gender' | 'birthday' | 'location' | 'joined_at' | 'anime_statistics' | 'time_zone' | 'is_supported';
+
 export interface ErrorResponse {
     status: number;
     error: string;
@@ -92,4 +94,15 @@ export interface MangaRankingOptions {
     limit?: number;
     offset?: number;
     fields?: Array<MangaField>;
+}
+
+export interface UserMangaListOptions {
+    status?: 'reading' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_read';
+    sort?: 'list_score' | 'list_updated_at' | 'manga_title' | 'manga_start_date' | 'manga_id';
+    limit?: number;
+    offset?: number;
+}
+
+export interface UserInfoOptions {
+    fields?: Array<UserField>
 }

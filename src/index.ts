@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, DetailedMangaOptions, ErrorResponse, ForumDetailsOptions, ForumTopicOptions, MangaListOptions, MangaRankingOptions, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions } from './options';
-import { Anime, AnimeListEntry, AnimeListStatus, DetailedAnime, DetailedForumTopic, DetailedManga, ForumBoards, ForumTopic, Holder, Manga, Paged, PagedResponse, RankedInstance } from './types';
+import { AnimeListOptions, AnimeRankingOptions, DetailedAnimeOptions, DetailedMangaOptions, ErrorResponse, ForumDetailsOptions, ForumTopicOptions, MangaListOptions, MangaRankingOptions, OAuthRequest, SeasonalAnimeOptions, SuggestedAnimeOptions, TokenResponse, UserAnimeListOptions, UserInfoOptions, UserMangaListOptions } from './options';
+import { Anime, AnimeListEntry, AnimeListStatus, DetailedAnime, DetailedForumTopic, DetailedManga, ForumBoards, ForumTopic, Holder, Manga, MangaListEntry, MangaListStatus, Paged, PagedResponse, RankedInstance, UserInfo } from './types';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
 function handlePromise<D>(call: Promise<AxiosResponse>, map: ((val) => D)): Promise<D | ErrorResponse> {
@@ -290,7 +290,39 @@ export default class MALClient {
 			params: params,
 			headers: this.createHeader(token),
 		}), data => this.createPaged(data, val => val as Array<RankedInstance<Manga>>, token));
+	}
 
+	public async updateMangaListStatus(token: string, manga_id: number, status: MangaListStatus): Promise<MangaListStatus | ErrorResponse> {
+		return handlePromise(axios.put(`https://api.myanimelist.net/v2/manga/${manga_id}/my_list_status`, status, {
+			headers: {
+				...this.createHeader(token),
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+		}), data => data as MangaListStatus);
+	}
+
+	public async deleteMangaListItem(token: string, manga_id: number): Promise<void | ErrorResponse> {
+		return handlePromise(axios.delete(`https://api.myanimelist.net/v2/manga/${manga_id}/my_list_status`, {
+			headers: this.createHeader(token),
+		}), () => undefined);
+	}
+
+	public async getUserMangaList(username: string = '@me', options?: UserMangaListOptions, token?: string): Promise<Paged<MangaListEntry> | ErrorResponse> {
+		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/mangalist`, {
+			params: options,
+			headers: this.createHeader(token),
+		}), data => this.createPaged(data, val => val as Array<MangaListEntry>, token));
+	}
+
+	public async getUserInfo(token: string, options?: UserInfoOptions): Promise<UserInfo | ErrorResponse> {
+		const params: object = options ? Object.assign({}, options) : {};
+		if(options && options.fields && options.fields.length > 0) {
+			params['fields'] = options.fields.join(',');
+		}
+		return handlePromise(axios.get('https://api.myanimelist.net/v2/users/@me', {
+			params: options,
+			headers: this.createHeader(token),
+		}), data => data as UserInfo);
 	}
 
 }
