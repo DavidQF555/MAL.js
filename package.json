@@ -1,8 +1,8 @@
 {
     "name": "@davidqf555/mal.js",
     "version": "1.0.3",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "./dist/src/index.js",
+    "types": "./dist/types/index.d.ts",
     "files": ["./dist"],
     "type": "module",
     "description": "Wrapper for the MyAnimeList API",
@@ -16,7 +16,7 @@
         "url": "git+https://github.com/DavidQF555/MAL.js.git"
     },
     "scripts": {
-        "build": "tsc --declaration",
+        "build": "tsc",
         "lint": "eslint . --ext .ts --fix"
     },
     "author": "DavidQF555",

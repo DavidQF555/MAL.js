@@ -1,4 +1,20 @@
-import { ErrorResponse } from './options';
+export interface ErrorResponse {
+    status: number;
+    error: string;
+    message?: string;
+}
+
+export interface OAuthRequest {
+    url: string;
+    code_verifier: string;
+}
+
+export interface TokenResponse {
+    token_type: string;
+    expires_in: number;
+    access_token: string;
+    refresh_token: string;
+}
 
 export interface Holder<T> {
     node: T;

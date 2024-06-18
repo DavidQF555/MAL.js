@@ -1,3 +1,20 @@
+export default function parseFields(fields: object): string {
+	const parts: Array<string> = [];
+	for(const key in fields) {
+		const value = fields[key];
+		if(value) {
+			if(typeof value === 'object') {
+				const parsed: string = parseFields(value);
+				parts.push(parsed ? `${key}{${parsed}}` : key);
+			}
+			else {
+				parts.push(key);
+			}
+		}
+	}
+	return parts.join(',');
+}
+
 export interface UserAnimeListFields extends AnimeFields {
     list_status?: boolean | AnimeListStatusFields;
 }
