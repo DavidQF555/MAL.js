@@ -522,12 +522,13 @@ export default class MALClient {
 		limit?: number;
 		/** offset of forum topics to return, default of 0 */
 		offset?: number;
-		/** how to sort the topics, only 'recent' supported */
+		/** how to sort the topics, only 'recent' currently supported in the endpoint */
 		sort?: 'recent';
 		/** query to search for */
 		q?: string;
-		/** TODO: Fill later */
+		/** filter to only topics created by the user corresponding to this username */
 		topic_user_name?: string;
+		/** filter to only topics involving the user corresponding to this username */
 		user_name?: string;
 	}, token?: string): Promise<Paged<ForumTopic> | ErrorResponse> {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/forum/topics', {
