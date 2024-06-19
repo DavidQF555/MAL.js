@@ -1,7 +1,7 @@
 {
     "name": "@davidqf555/mal.js",
     "version": "1.0.3",
-    "main": "./dist/src/index.js",
+    "main": "./dist/index.js",
     "types": "./dist/types/index.d.ts",
     "files": ["./dist"],
     "type": "module",
