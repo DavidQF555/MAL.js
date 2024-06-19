@@ -21,7 +21,7 @@ export interface Holder<T> {
 }
 
 export interface Paged<T> {
-    data: Array<T>,
+    data: T,
     previous?: () => Promise<Paged<T> | ErrorResponse>;
     next?: () => Promise<Paged<T> | ErrorResponse>;
 }
@@ -31,8 +31,14 @@ export interface Paging {
     next?: string;
 }
 
+/**
+ * T should always be an array according to the documentation
+ * However, in practice, T is not always an array
+ *
+ * @see https://myanimelist.net/apiconfig/references/api/v2#section/Common-formats for documentation
+ */
 export interface PagedResponse<T> {
-    data: Array<T>;
+    data: T;
     paging: Paging;
 }
 

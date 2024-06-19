@@ -200,7 +200,7 @@ export default class MALClient {
 		};
 	}
 
-	private createPaged<T, S>(data: PagedResponse<T>, map: (val: Array<T>) => Array<S>, token?: string): Paged<S> {
+	private createPaged<T, S>(data: PagedResponse<T>, map: (val: T) => S, token?: string): Paged<S> {
 		const paged: Paged<S> = { data: map(data.data) };
 		if(data.paging.previous) {
 			paged['previous'] = () => handlePromise(axios.get(data.paging.previous as string, {
@@ -237,7 +237,7 @@ export default class MALClient {
 		nsfw?: boolean;
 		/** the fields that are present for each anime entry (see {@link parseFields}) */
 		fields?: AnimeFields;
-	}, token?: string): Promise<Paged<Anime> | ErrorResponse> {
+	}, token?: string): Promise<Paged<Array<Anime>> | ErrorResponse> {
 		const params: { [key: string]: unknown } = Object.assign({}, options);
 		if(options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -253,7 +253,7 @@ export default class MALClient {
 				}
 				return nodes;
 			};
-			return this.createPaged(data as PagedResponse<Holder<Anime>>, map, token);
+			return this.createPaged(data as PagedResponse<Array<Holder<Anime>>>, map, token);
 		});
 	}
 
@@ -303,7 +303,7 @@ export default class MALClient {
 		offset?: number;
 		/** the fields that are present for each anime entry (see {@link parseFields}) */
 		fields?: AnimeFields;
-	}, token?: string): Promise<Paged<RankedInstance<Anime>> | ErrorResponse> {
+	}, token?: string): Promise<Paged<Array<RankedInstance<Anime>>> | ErrorResponse> {
 		const params: { [keys: string]: unknown } = Object.assign({}, options);
 		if(options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -311,7 +311,7 @@ export default class MALClient {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime/ranking', {
 			params: params,
 			headers: this.createHeader(token),
-		}), data => this.createPaged(data as PagedResponse<RankedInstance<Anime>>, val => val as Array<RankedInstance<Anime>>, token));
+		}), data => this.createPaged(data as PagedResponse<Array<RankedInstance<Anime>>>, val => val as Array<RankedInstance<Anime>>, token));
 	}
 
 	/**
@@ -336,7 +336,7 @@ export default class MALClient {
 		offset?: number;
 		/** the fields that are present for each anime entry (see {@link parseFields}) */
 		fields?: AnimeFields;
-	}, token?: string): Promise<Paged<Anime> | ErrorResponse> {
+	}, token?: string): Promise<Paged<Array<Anime>> | ErrorResponse> {
 		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
 		if(options && options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -352,7 +352,7 @@ export default class MALClient {
 				}
 				return nodes;
 			};
-			return this.createPaged(data as PagedResponse<Holder<Anime>>, map, token);
+			return this.createPaged(data as PagedResponse<Array<Holder<Anime>>>, map, token);
 		});
 	}
 
@@ -374,7 +374,7 @@ export default class MALClient {
 		offset?: number;
 		/** the fields that are present for each anime entry (see {@link parseFields}) */
 		fields?: AnimeFields;
-	}): Promise<Paged<Anime> | ErrorResponse> {
+	}): Promise<Paged<Array<Anime>> | ErrorResponse> {
 		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
 		if(options && options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -390,7 +390,7 @@ export default class MALClient {
 				}
 				return nodes;
 			};
-			return this.createPaged(data as PagedResponse<Holder<Anime>>, map, token);
+			return this.createPaged(data as PagedResponse<Array<Holder<Anime>>>, map, token);
 		});
 	}
 
@@ -454,7 +454,7 @@ export default class MALClient {
 		nsfw?: boolean;
 		/** the fields that are present for each anime list entry (see {@link parseFields}) */
 		fields?: UserAnimeListFields;
-	}, token?: string): Promise<Paged<AnimeListEntry> | ErrorResponse> {
+	}, token?: string): Promise<Paged<Array<AnimeListEntry>> | ErrorResponse> {
 		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
 		if(options && options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -462,7 +462,7 @@ export default class MALClient {
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/animelist`, {
 			params: params,
 			headers: this.createHeader(token),
-		}), data => this.createPaged(data as PagedResponse<AnimeListEntry>, val => val, token));
+		}), data => this.createPaged(data as PagedResponse<Array<AnimeListEntry>>, val => val, token));
 	}
 
 	/**
@@ -483,6 +483,9 @@ export default class MALClient {
 	/**
 	 * Gets the details of a forum topic from its ID
 	 *
+	 * Note: This endpoint's response is different than documented the paging is not actually an array in practice
+	 * I have modified the type definitions to fit both its expected and actual format
+	 *
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/forum_topic_get for endpoint documentation
 	 *
 	 * @param topic_id - ID of forum topic to locate
@@ -496,11 +499,11 @@ export default class MALClient {
 		limit?: number;
 		/** offset of forum topics to return, default of 0 */
 		offset?: number;
-	}, token?: string): Promise<Paged<DetailedForumTopic> | ErrorResponse> {
+	}, token?: string): Promise<Paged<DetailedForumTopic | Array<DetailedForumTopic>> | ErrorResponse> {
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/forum/topic/${topic_id}`, {
 			params: options,
 			headers: this.createHeader(token),
-		}), data => this.createPaged(data as PagedResponse<DetailedForumTopic>, val => val, token));
+		}), data => this.createPaged(data as PagedResponse<DetailedForumTopic | Array<DetailedForumTopic>>, val => val, token));
 	}
 
 	/**
@@ -530,11 +533,11 @@ export default class MALClient {
 		topic_user_name?: string;
 		/** filter to only topics involving the user corresponding to this username */
 		user_name?: string;
-	}, token?: string): Promise<Paged<ForumTopic> | ErrorResponse> {
+	}, token?: string): Promise<Paged<Array<ForumTopic>> | ErrorResponse> {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/forum/topics', {
 			params: options,
 			headers: this.createHeader(token),
-		}), data => this.createPaged(data as PagedResponse<ForumTopic>, val => val, token));
+		}), data => this.createPaged(data as PagedResponse<Array<ForumTopic>>, val => val, token));
 	}
 
 	/**
@@ -559,7 +562,7 @@ export default class MALClient {
 		nsfw?: boolean;
 		/** the fields that are present for each manga entry (see {@link parseFields}) */
 		fields?: MangaFields;
-	}, token?:string): Promise<Paged<Manga> | ErrorResponse> {
+	}, token?:string): Promise<Paged<Array<Manga>> | ErrorResponse> {
 		const params: { [keys: string]: unknown } = Object.assign({}, options);
 		if(options && options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -575,7 +578,7 @@ export default class MALClient {
 				}
 				return nodes;
 			};
-			return this.createPaged(data as PagedResponse<Holder<Manga>>, map, token);
+			return this.createPaged(data as PagedResponse<Array<Holder<Manga>>>, map, token);
 		});
 	}
 
@@ -625,7 +628,7 @@ export default class MALClient {
 		offset?: number;
 		/** the fields that are present for each manga entry (see {@link parseFields}) */
 		fields?: MangaFields;
-	}, token?: string): Promise<Paged<RankedInstance<Manga>> | ErrorResponse> {
+	}, token?: string): Promise<Paged<Array<RankedInstance<Manga>>> | ErrorResponse> {
 		const params: { [keys: string]: unknown } = Object.assign({}, options);
 		if(options && options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -633,7 +636,7 @@ export default class MALClient {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/manga/ranking', {
 			params: params,
 			headers: this.createHeader(token),
-		}), data => this.createPaged(data as PagedResponse<RankedInstance<Manga>>, val => val, token));
+		}), data => this.createPaged(data as PagedResponse<Array<RankedInstance<Manga>>>, val => val, token));
 	}
 
 	/**
@@ -696,7 +699,7 @@ export default class MALClient {
 		nsfw?: boolean;
 		/** the fields that are present for each manga list entry (see {@link parseFields}) */
 		fields?: UserMangaListFields;
-	}, token?: string): Promise<Paged<MangaListEntry> | ErrorResponse> {
+	}, token?: string): Promise<Paged<Array<MangaListEntry>> | ErrorResponse> {
 		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
 		if(options && options.fields) {
 			params['fields'] = parseFields(options.fields);
@@ -704,7 +707,7 @@ export default class MALClient {
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/mangalist`, {
 			params: params,
 			headers: this.createHeader(token),
-		}), data => this.createPaged(data as PagedResponse<MangaListEntry>, val => val, token));
+		}), data => this.createPaged(data as PagedResponse<Array<MangaListEntry>>, val => val, token));
 	}
 
 	/**
