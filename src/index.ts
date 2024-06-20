@@ -72,9 +72,7 @@ function codeChallenge(verifier: string): string {
 export default class MALClient {
 
 	private client_id: string;
-	/**
-	 * Only used for user authorization, not needed otherwise
-	 */
+	/** only used for user authorization, not needed otherwise */
 	private client_secret?: string;
 
 	/**
@@ -200,6 +198,23 @@ export default class MALClient {
 		};
 	}
 
+	/**
+	 * Creates a paged instance from a paged response
+	 * Converts the paging URLs into promises
+	 *
+	 * This conversion assumes that the paging URLs each respond with the same type as that of 'data'
+	 *
+	 * Note: T should be an array according to the documentation
+	 * However, there are cases where it is not
+	 *
+	 * @see https://myanimelist.net/apiconfig/references/api/v2#section/Common-formats for documentation
+	 *
+	 * @param data - paged response to convert
+	 * @param map - mapping of the data to apply
+	 * @param token - token if a token is needed for paging promises
+	 *
+	 * @returns a paged instance converted from the paged response
+	 */
 	private createPaged<T, S>(data: PagedResponse<T>, map: (val: T) => S, token?: string): Paged<S> {
 		const paged: Paged<S> = { data: map(data.data) };
 		if(data.paging.previous) {
@@ -468,6 +483,7 @@ export default class MALClient {
 	/**
 	 * Gets the forum boards
 	 *
+	 * @see getForumTopics to query for forum topics
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/forum_boards_get for endpoint documentation
 	 *
 	 * @param token - token if want access from authenticated user's perspective
@@ -486,6 +502,7 @@ export default class MALClient {
 	 * Note: This endpoint's response is different than documented the paging is not actually an array in practice
 	 * I have modified the type definitions to fit both its expected and actual format
 	 *
+	 * @see getForumTopics to query for a forum topic and its ID
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/forum_topic_get for endpoint documentation
 	 *
 	 * @param topic_id - ID of forum topic to locate
@@ -509,6 +526,7 @@ export default class MALClient {
 	/**
 	 * Gets a list of forum topics
 	 *
+	 * @see getForumTopicDetails to get more details from a topic ID
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/forum_topics_get for endpoint documentation
 	 *
 	 * @param options - query parameters of access

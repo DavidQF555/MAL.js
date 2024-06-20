@@ -1,5 +1,15 @@
 import { Anime, AnimeListStatus, DetailedAnime, DetailedManga, Manga, MangaListStatus, UserInfo } from './types.js';
 
+/**
+ * Converts an object to a field string as specified by {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}
+ *
+ * Each key is added to the string if the corresponding value evaluates to true
+ * If the value is another object, it is parsed recursively and added after the key in curly brackets
+ *
+ * @param fields - an object representing the fields
+ *
+ * @returns a field string converted from the object
+ */
 export default function parseFields(fields: object): string {
 	const parts: Array<string> = [];
 	for(const key in fields) {
@@ -38,17 +48,17 @@ export interface UserMangaListFields extends MangaFields {
 }
 
 export type MangaListStatusFields = {
-    [P in keyof MangaListStatus]?: boolean;
+    [T in keyof MangaListStatus]?: boolean;
 }
 
 export type MangaFields = {
-    [P in keyof Manga]?: boolean;
+    [T in keyof Manga]?: boolean;
 }
 
 export type DetailedMangaFields = {
-    [P in keyof DetailedManga]?: boolean;
+    [T in keyof DetailedManga]?: boolean;
 }
 
 export type UserInfoFields = {
-    [P in keyof UserInfo]?: boolean;
+    [T in keyof UserInfo]?: boolean;
 }
