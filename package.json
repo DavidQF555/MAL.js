@@ -1,6 +1,6 @@
 {
     "name": "@davidqf555/mal.js",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "main": "./dist/index.js",
     "types": "./dist/types/index.d.ts",
     "files": ["./dist"],
