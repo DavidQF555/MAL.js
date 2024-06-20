@@ -23,7 +23,7 @@ const client = MALCLient(client_id, client_secret);
 const { url, code_verifier } = client.requestAuthorization();
 
 // Retrieve token after client authenticates and receives code
-const { access_token } = await client.retrieveAuthorizationToken(code, verifier);
+const { access_token } = await client.retrieveAuthorizationToken(code, code_verifier);
 
 // Get anime list from a query
 const { data } = await client.getAnimeList({ q: 'Sword Art Online' });
