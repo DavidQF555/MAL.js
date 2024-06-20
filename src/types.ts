@@ -1,3 +1,8 @@
+/** date formatted string (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-formats}) */
+type Date = string;
+/** date-time formatted string (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-formats}) */
+type DateTime = string;
+
 export interface ErrorResponse {
     status: number;
     error: string;
@@ -63,14 +68,14 @@ export interface AnimeListStatus {
     score?: number;
     num_episodes_watched?: number;
     is_rewatching?: boolean;
-    start_date?: string;
-    finish_date?: string;
+    start_date?: Date;
+    finish_date?: Date;
     priority?: number;
     num_times_rewatched?: number;
     rewatch_value?: number;
     tags?: Array<string>;
     comments?: string;
-    updated_at?: string;
+    updated_at?: DateTime;
 }
 
 export interface Related<T> extends Holder<T> {
@@ -125,8 +130,8 @@ export interface Anime {
     num_scoring_users?: number;
     nsfw?: 'white' | 'gray' | 'black';
     genres?: Array<Genre>;
-    created_at?: string;
-    updated_at?: string;
+    created_at?: DateTime;
+    updated_at?: DateTime;
     media_type?: 'unknown' | 'tv' | 'ova' | 'movie' | 'special' | 'ona' | 'music';
     status?: 'finished_airing' | 'currently_airing' | 'not_yet_aired';
     my_list_status?: AnimeListStatus;
@@ -187,7 +192,7 @@ export interface DetailedForumTopic {
 export interface ForumPost {
     id: number;
     number: number;
-    created_at: string;
+    created_at: DateTime;
     created_by: ForumPostAuthor;
     body: string;
     signature: string;
@@ -215,10 +220,10 @@ export interface ForumTopicPollOption {
 export interface ForumTopic {
     id: number;
     title: string;
-    created_at: string;
+    created_at: DateTime;
     created_by: ForumTopicAuthor;
     number_of_posts: number;
-    last_post_created_at: string;
+    last_post_created_at: DateTime;
     last_post_created_by: ForumTopicAuthor;
     is_locked: boolean;
 }
@@ -234,14 +239,14 @@ export interface MangaListStatus {
     num_volumes_read?: number;
     num_chapters_read?: number;
     is_rereading?: boolean;
-    start_date?: string;
-    finish_date?: string;
+    start_date?: Date;
+    finish_date?: Date;
     priority?: number;
     num_times_reread?: number;
     reread_value?: number;
     tags?: Array<string>;
     comments?: string;
-    updated_at?: string;
+    updated_at?: DateTime;
 }
 
 export interface Author {
@@ -278,8 +283,8 @@ export interface Manga {
     num_scoring_users?: number;
     nsfw?: 'white' | 'gray' | 'black';
     genres?: Array<Genre>;
-    created_at?: string;
-    updated_at?: string;
+    created_at?: DateTime;
+    updated_at?: DateTime;
     media_type?: 'unknown' | 'manga' | 'novel' | 'one_shot' | 'doujinshi' | 'manhwa' | 'manhua' | 'oel';
     status?: 'finished' | 'currently_publishing' | 'not_yet_published';
     my_list_status?: MangaListStatus;
@@ -324,9 +329,9 @@ export interface UserInfo {
     name: string;
     picture: string;
     gender?: string;
-    birthday?: string;
+    birthday?: Date;
     location?: string;
-    joined_at: string;
+    joined_at: DateTime;
     anime_statistics?: AnimeStatistics;
     time_zone?: string;
     is_supported?: boolean;

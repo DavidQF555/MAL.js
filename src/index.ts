@@ -337,7 +337,7 @@ export default class MALClient {
 	 *
 	 * @param year - year to search
 	 * @param season - season to search
-	 * @param options - query parameters of access, can be omitted, not sure if there is a 'nsfw' field
+	 * @param options - query parameters of access, can be omitted
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or a paged list of anime objects
@@ -349,6 +349,8 @@ export default class MALClient {
 		limit?: number;
 		/** offset of anime entries to return, default of 0 */
 		offset?: number;
+		/** whether NSFW anime entries are shown, defaults to false (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}) */
+		nsfw?: boolean;
 		/** the fields that are present for each anime entry (see {@link parseFields}) */
 		fields?: AnimeFields;
 	}, token?: string): Promise<Paged<Array<Anime>> | ErrorResponse> {
