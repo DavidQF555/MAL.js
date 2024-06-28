@@ -1,6 +1,20 @@
 import { Anime, AnimeListStatus, DetailedAnime, DetailedManga, Manga, MangaListStatus, UserInfo } from './types.js';
 
-type Fields = { [key: string]: boolean | Fields | undefined }
+type FieldsObject = { [key: string]: boolean | FieldsObject | undefined }
+
+export default class FieldsParser<T extends FieldsObject> {
+
+	private fields: T;
+
+	constructor(fields: T) {
+		this.fields = fields;
+	}
+
+	public toString(): string {
+		return parseFields(this.fields);
+	}
+
+}
 
 /**
  * Converts an object to a field string as specified by {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}
@@ -12,10 +26,10 @@ type Fields = { [key: string]: boolean | Fields | undefined }
  *
  * @returns a field string converted from the object
  */
-export default function parseFields(fields: Fields): string {
+export function parseFields(fields: FieldsObject): string {
 	const parts: Array<string> = [];
 	for(const key in fields) {
-		const value = fields[key as keyof Fields];
+		const value = fields[key as keyof FieldsObject];
 		if(value) {
 			if(typeof value === 'object') {
 				const parsed: string = parseFields(value);
@@ -29,7 +43,7 @@ export default function parseFields(fields: Fields): string {
 	return parts.join(',');
 }
 
-export interface UserAnimeListFields extends Fields, AnimeFields {
+export interface UserAnimeListFields extends FieldsObject, AnimeFields {
     list_status?: boolean | AnimeListStatusFields;
 }
 
@@ -45,7 +59,7 @@ export type DetailedAnimeFields = {
     [T in keyof DetailedAnime]?: boolean;
 }
 
-export interface UserMangaListFields extends Fields, MangaFields {
+export interface UserMangaListFields extends FieldsObject, MangaFields {
     list_status?: boolean | MangaListStatusFields;
 }
 

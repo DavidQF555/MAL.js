@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { ErrorResponse, OAuthRequest, TokenResponse, Anime, AnimeListEntry, AnimeListStatus, DetailedAnime, DetailedForumTopic, DetailedManga, ForumBoards, ForumTopic, Holder, Manga, MangaListEntry, MangaListStatus, Paged, PagedResponse, RankedInstance, UserInfo } from './types.js';
-import parseFields, { AnimeFields, DetailedAnimeFields, UserAnimeListFields, MangaFields, DetailedMangaFields, UserMangaListFields, UserInfoFields } from './fields.js';
+import FieldsParser, { AnimeFields, DetailedAnimeFields, UserAnimeListFields, MangaFields, DetailedMangaFields, UserMangaListFields, UserInfoFields } from './fields.js';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
 /**
@@ -236,12 +236,12 @@ export default class MALClient {
 	 * @see getAnimeDetails to get more details from an anime entry ID
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/anime_get for endpoint documentation
 	 *
-	 * @param options - query parameters of access
+	 * @param params - query parameters of access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or a paged list of anime objects
 	 */
-	public async getAnimeList(options: {
+	public async getAnimeList(params: {
 		/** query to search for */
 		q: string;
 		/** max number of anime entries to return, max and default of 100 */
@@ -250,13 +250,9 @@ export default class MALClient {
 		offset?: number;
 		/** whether NSFW anime entries are shown, defaults to false (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}) */
 		nsfw?: boolean;
-		/** the fields that are present for each anime entry (see {@link parseFields}) */
-		fields?: AnimeFields;
+		/** the fields that are present for each anime entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<AnimeFields>;
 	}, token?: string): Promise<Paged<Array<Anime>> | ErrorResponse> {
-		const params: { [key: string]: unknown } = Object.assign({}, options);
-		if(options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime', {
 			params: params,
 			headers: this.createHeader(token),
@@ -279,19 +275,15 @@ export default class MALClient {
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/anime_anime_id_get for endpoint documentation
 	 *
 	 * @param id - ID of anime to locate
-	 * @param options - query parameter of access, can be omitted
+	 * @param params - query parameter of access, can be omitted
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or a detailed anime entry
 	 */
-	public async getAnimeDetails(id: number, options?: {
-		/** The fields that are present in the detailed anime entry (see {@link parseFields}) */
-		fields?: DetailedAnimeFields;
+	public async getAnimeDetails(id: number, params?: {
+		/** the fields that are present in the detailed anime entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<DetailedAnimeFields>;
 	}, token?: string): Promise<DetailedAnime | ErrorResponse> {
-		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/anime/${id}`, {
 			params: params,
 			headers: this.createHeader(token),
@@ -304,25 +296,21 @@ export default class MALClient {
 	 * @see getAnimeDetails to get more details from an anime entry ID
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/anime_ranking_get for endpoint documentation
 	 *
-	 * @param options - query parameters of access
+	 * @param params - query parameters of access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or a paged list of ranked anime objects
 	 */
-	public async getAnimeRanking(options: {
+	public async getAnimeRanking(params: {
 		/** type of ranking */
 		ranking_type: 'all' | 'airing' | 'upcoming' | 'tv' | 'ova' | 'movie' | 'special' | 'bypopularity' | 'favorite';
 		/** max number of anime entries to return, max and default of 100 */
 		limit?: number;
 		/** offset of anime entries to return, default of 0 */
 		offset?: number;
-		/** the fields that are present for each anime entry (see {@link parseFields}) */
-		fields?: AnimeFields;
+		/** the fields that are present for each anime entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<AnimeFields>;
 	}, token?: string): Promise<Paged<Array<RankedInstance<Anime>>> | ErrorResponse> {
-		const params: { [keys: string]: unknown } = Object.assign({}, options);
-		if(options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime/ranking', {
 			params: params,
 			headers: this.createHeader(token),
@@ -337,12 +325,12 @@ export default class MALClient {
 	 *
 	 * @param year - year to search
 	 * @param season - season to search
-	 * @param options - query parameters of access, can be omitted
+	 * @param params - query parameters of access, can be omitted
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or a paged list of anime objects
 	 */
-	public async getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', options?: {
+	public async getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', params?: {
 		/** how the paged list is sorted descending */
 		sort?: 'anime_score' | 'anime_num_list_users';
 		/** max number of anime entries to return, max and default of 100 */
@@ -351,13 +339,9 @@ export default class MALClient {
 		offset?: number;
 		/** whether NSFW anime entries are shown, defaults to false (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}) */
 		nsfw?: boolean;
-		/** the fields that are present for each anime entry (see {@link parseFields}) */
-		fields?: AnimeFields;
+		/** the fields that are present for each anime entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<AnimeFields>;
 	}, token?: string): Promise<Paged<Array<Anime>> | ErrorResponse> {
-		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/anime/season/${year}/${season}`, {
 			params: params,
 			headers: this.createHeader(token),
@@ -380,22 +364,18 @@ export default class MALClient {
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/anime_suggestions_get for endpoint documentation
 	 *
 	 * @param token - token of the authenticated user
-	 * @param options - query parameters of access, can be omitted, not sure if there is a 'nsfw' field
+	 * @param params - query parameters of access, can be omitted, not sure if there is a 'nsfw' field
 	 *
 	 * @returns a promise of an error or paged list of anime objects
 	 */
-	public async getSuggestedAnime(token: string, options?: {
+	public async getSuggestedAnime(token: string, params?: {
 		/** max number of anime entries to return, max and default of 100 */
 		limit?: number;
 		/** offset of anime entries to return, default of 0 */
 		offset?: number;
-		/** the fields that are present for each anime entry (see {@link parseFields}) */
-		fields?: AnimeFields;
+		/** the fields that are present for each anime entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<AnimeFields>;
 	}): Promise<Paged<Array<Anime>> | ErrorResponse> {
-		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/anime/suggestions', {
 			params: params,
 			headers: this.createHeader(token),
@@ -453,12 +433,12 @@ export default class MALClient {
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/users_user_id_animelist_get for endpoint documentation
 	 *
 	 * @param username - username of user, defaults to '@me' for the user corresponding to the token
-	 * @param options - query parameters of access
+	 * @param params - query parameters of access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or paged list of user anime list entries
 	 */
-	public async getUserAnimeList(username: string = '@me', options?: {
+	public async getUserAnimeList(username: string = '@me', params?: {
 		/** anime list entry status filter */
 		status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
 		/** how the paged list is sorted */
@@ -469,13 +449,9 @@ export default class MALClient {
 		offset?: number;
 		/** whether NSFW anime list entries are shown, defaults to false (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}) */
 		nsfw?: boolean;
-		/** the fields that are present for each anime list entry (see {@link parseFields}) */
-		fields?: UserAnimeListFields;
+		/** the fields that are present for each anime list entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<UserAnimeListFields>;
 	}, token?: string): Promise<Paged<Array<AnimeListEntry>> | ErrorResponse> {
-		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/animelist`, {
 			params: params,
 			headers: this.createHeader(token),
@@ -508,19 +484,19 @@ export default class MALClient {
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/forum_topic_get for endpoint documentation
 	 *
 	 * @param topic_id - ID of forum topic to locate
-	 * @param options - query parameters of access
+	 * @param params - query parameters of access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or paged list of detailed forum topic objects
 	 */
-	public async getForumTopicDetails(topic_id: number, options?: {
+	public async getForumTopicDetails(topic_id: number, params?: {
 		/** max number of forum topics to return, max and default of 100 */
 		limit?: number;
 		/** offset of forum topics to return, default of 0 */
 		offset?: number;
 	}, token?: string): Promise<Paged<DetailedForumTopic | Array<DetailedForumTopic>> | ErrorResponse> {
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/forum/topic/${topic_id}`, {
-			params: options,
+			params: params,
 			headers: this.createHeader(token),
 		}), data => this.createPaged(data as PagedResponse<DetailedForumTopic | Array<DetailedForumTopic>>, val => val, token));
 	}
@@ -531,12 +507,12 @@ export default class MALClient {
 	 * @see getForumTopicDetails to get more details from a topic ID
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/forum_topics_get for endpoint documentation
 	 *
-	 * @param options - query parameters of access
+	 * @param params - query parameters of access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or paged list of forum topic objects
 	 */
-	public async getForumTopics(options: {
+	public async getForumTopics(params: {
 		/** ID of the board to search */
 		board_id?: number;
 		/** ID of the subboard to search */
@@ -555,7 +531,7 @@ export default class MALClient {
 		user_name?: string;
 	}, token?: string): Promise<Paged<Array<ForumTopic>> | ErrorResponse> {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/forum/topics', {
-			params: options,
+			params: params,
 			headers: this.createHeader(token),
 		}), data => this.createPaged(data as PagedResponse<Array<ForumTopic>>, val => val, token));
 	}
@@ -566,12 +542,12 @@ export default class MALClient {
 	 * @see getMangaDetails to get more details from a manga entry ID
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/manga_get for endpoint documentation
 	 *
-	 * @param options - query parameters for access
+	 * @param params - query parameters for access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or paged list of manga objects
 	 */
-	public async getMangaList(options: {
+	public async getMangaList(params: {
 		/** query to search for */
 		q: string;
 		/** max number of manga entries to return, max and default of 100 */
@@ -580,13 +556,9 @@ export default class MALClient {
 		offset?: number;
 		/** whether NSFW manga entries are shown, defaults to false (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}) */
 		nsfw?: boolean;
-		/** the fields that are present for each manga entry (see {@link parseFields}) */
-		fields?: MangaFields;
+		/** the fields that are present for each manga entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<MangaFields>;
 	}, token?:string): Promise<Paged<Array<Manga>> | ErrorResponse> {
-		const params: { [keys: string]: unknown } = Object.assign({}, options);
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/manga', {
 			params: params,
 			headers: this.createHeader(token),
@@ -609,19 +581,15 @@ export default class MALClient {
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/manga_manga_id_get for endpoint documentation
 	 *
 	 * @param id - ID of manga to locate
-	 * @param options - query parameters of access, can be omitted
+	 * @param params - query parameters of access, can be omitted
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or detailed manga entry
 	 */
-	public async getMangaDetails(id: number, options?: {
-		/** The fields that are present in the detailed manga entry (see {@link parseFields}) */
-		fields?: DetailedMangaFields;
+	public async getMangaDetails(id: number, params?: {
+		/** the fields that are present in the detailed manga entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<DetailedMangaFields>;
 	}, token?: string): Promise<DetailedManga | ErrorResponse> {
-		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/manga/${id}`, {
 			params: params,
 			headers: this.createHeader(token),
@@ -634,25 +602,21 @@ export default class MALClient {
 	 * @see getMangaDetails to get more details from a manga entry ID
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/manga_ranking_get for endpoint documentation
 	 *
-	 * @param options - query parameters of access
+	 * @param params - query parameters of access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or paged list of ranked manga objects
 	 */
-	public async getMangaRanking(options: {
+	public async getMangaRanking(params: {
 		/** type of ranking */
 		ranking_type: 'all' | 'manga' | 'novels' | 'oneshots' | 'doujin' | 'manhwa' | 'manhua' | 'bypopularity' | 'favorite';
 		/** max number of manga entries to return, max and default of 100 */
 		limit?: number;
 		/** offset of manga entries to return, default of 0 */
 		offset?: number;
-		/** the fields that are present for each manga entry (see {@link parseFields}) */
-		fields?: MangaFields;
+		/** the fields that are present for each manga entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<MangaFields>;
 	}, token?: string): Promise<Paged<Array<RankedInstance<Manga>>> | ErrorResponse> {
-		const params: { [keys: string]: unknown } = Object.assign({}, options);
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/manga/ranking', {
 			params: params,
 			headers: this.createHeader(token),
@@ -701,12 +665,12 @@ export default class MALClient {
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/users_user_id_mangalist_get for endpoint documentation
 	 *
 	 * @param username - username of user, defaults to '@me' for the user corresponding to the token
-	 * @param options - query parameters of access
+	 * @param params - query parameters of access
 	 * @param token - token if want access from authenticated user's perspective
 	 *
 	 * @returns a promise of an error or paged list of user manga list entries
 	 */
-	public async getUserMangaList(username: string = '@me', options?: {
+	public async getUserMangaList(username: string = '@me', params?: {
 		/** manga list entry status filter */
 		status?: 'reading' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_read';
 		/** how the paged list is sorted */
@@ -717,13 +681,9 @@ export default class MALClient {
 		offset?: number;
 		/** whether NSFW manga list entries are shown, defaults to false (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}) */
 		nsfw?: boolean;
-		/** the fields that are present for each manga list entry (see {@link parseFields}) */
-		fields?: UserMangaListFields;
+		/** the fields that are present for each manga list entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<UserMangaListFields>;
 	}, token?: string): Promise<Paged<Array<MangaListEntry>> | ErrorResponse> {
-		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get(`https://api.myanimelist.net/v2/users/${username}/mangalist`, {
 			params: params,
 			headers: this.createHeader(token),
@@ -737,20 +697,16 @@ export default class MALClient {
 	 * @see https://myanimelist.net/apiconfig/references/api/v2#operation/users_user_id_get for endpoint documentation
 	 *
 	 * @param token - token of the authenticated user
-	 * @param options - query parameters of access, can be omitted
+	 * @param params - query parameters of access, can be omitted
 	 *
 	 * @returns a promise of an error or a user info object
 	 */
-	public async getUserInfo(token: string, options?: {
-		/** the fields that are present in the user info (see {@link parseFields}) */
-		fields?: UserInfoFields;
+	public async getUserInfo(token: string, params?: {
+		/** the fields that are present in the user info (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
+		fields?: string | FieldsParser<UserInfoFields>;
 	}): Promise<UserInfo | ErrorResponse> {
-		const params: { [keys: string]: unknown } = options ? Object.assign({}, options) : {};
-		if(options && options.fields) {
-			params['fields'] = parseFields(options.fields);
-		}
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/users/@me', {
-			params: options,
+			params: params,
 			headers: this.createHeader(token),
 		}), data => data as UserInfo);
 	}
