@@ -1,15 +1,39 @@
 import { Anime, AnimeListStatus, DetailedAnime, DetailedManga, Manga, MangaListStatus, UserInfo } from './types.js';
 
+/**
+ * An object that encodes which fields are present
+ *
+ * Each key is a field and their value is whether it is present or their subfields
+ */
 type FieldsObject = { [key: string]: boolean | FieldsObject | undefined }
 
+/**
+ * A wrapper class that formats a {@link FieldsObject} to a string
+ *
+ * @see https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters for format
+ */
 export default class FieldsParser<T extends FieldsObject> {
 
 	private fields: T;
 
+	/**
+	 * Creates an instance from a fields object
+	 *
+	 * @param fields - the fields object to format
+	 */
 	constructor(fields: T) {
 		this.fields = fields;
 	}
 
+	/**
+	 * @override
+	 *
+	 * Parses the fields object into a formatted string
+	 *
+	 * @see parseFields
+	 *
+	 * @returns a formatted string
+	 */
 	public toString(): string {
 		return parseFields(this.fields);
 	}
