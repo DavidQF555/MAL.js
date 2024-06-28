@@ -436,7 +436,7 @@ export default class MALClient {
 	 * @returns a promise of an error or new status after updating
 	 */
 	public async updateAnimeListStatus(token: string, anime_id: number, status: AnimeListStatus): Promise<AnimeListStatus | ErrorResponse> {
-		return handlePromise(axios.put(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, status, {
+		return handlePromise(axios.patch(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, status, {
 			headers: {
 				...this.createHeader(token),
 				'Content-Type': 'application/x-www-form-urlencoded',
@@ -668,7 +668,7 @@ export default class MALClient {
 	 * @returns a promise of an error or new status after updating
 	 */
 	public async updateMangaListStatus(token: string, manga_id: number, status: MangaListStatus): Promise<MangaListStatus | ErrorResponse> {
-		return handlePromise(axios.put(`https://api.myanimelist.net/v2/manga/${manga_id}/my_list_status`, status, {
+		return handlePromise(axios.patch(`https://api.myanimelist.net/v2/manga/${manga_id}/my_list_status`, status, {
 			headers: {
 				...this.createHeader(token),
 				'Content-Type': 'application/x-www-form-urlencoded',
