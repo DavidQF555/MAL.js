@@ -17,7 +17,7 @@ The documentation for the API can be found [here](https://myanimelist.net/apicon
 import MALClient, { FieldsParser } from '@davidqf555/mal.js';
 
 // Create client to access MyAnimeList API
-const client = MALCLient(client_id, client_secret);
+const client = new MALCLient(client_id, client_secret);
 
 // Generate URL for client to authenticate with randomly generated verifer
 const { url, code_verifier } = client.requestAuthorization();
