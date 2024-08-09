@@ -8,6 +8,39 @@ import { Anime, AnimeListStatus, DetailedAnime, DetailedManga, Manga, MangaListS
 export type FieldsObject = { [key: string]: boolean | FieldsObject | undefined }
 
 /**
+ * A wrapper class that formats a {@link FieldsObject} to a string
+ *
+ * @see https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters for format
+ */
+export class FieldsParser<T extends FieldsObject> {
+
+	private fields: T;
+
+	/**
+	 * Creates an instance from a fields object
+	 *
+	 * @param fields - the fields object to format
+	 */
+	constructor(fields: T) {
+		this.fields = fields;
+	}
+
+	/**
+	 * @override
+	 *
+	 * Parses the fields object into a formatted string
+	 *
+	 * @see parseFields
+	 *
+	 * @returns a formatted string
+	 */
+	public toString(): string {
+		return parseFields(this.fields);
+	}
+
+}
+
+/**
  * Converts an object to a field string as specified by {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}
  *
  * Each key is added to the string if the corresponding value evaluates to true

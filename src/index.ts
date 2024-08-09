@@ -1,40 +1,11 @@
-import axios, { AxiosResponse } from 'axios';
 import { ErrorResponse, OAuthRequest, TokenResponse, Anime, AnimeListEntry, AnimeListStatus, DetailedAnime, DetailedForumTopic, DetailedManga, ForumBoards, ForumTopic, Holder, Manga, MangaListEntry, MangaListStatus, Paged, PagedResponse, RankedInstance, UserInfo } from './types.js';
-import parseFields, { FieldsObject, AnimeFields, DetailedAnimeFields, UserAnimeListFields, MangaFields, DetailedMangaFields, UserMangaListFields, UserInfoFields } from './fields.js';
+import { AnimeFields, DetailedAnimeFields, UserAnimeListFields, MangaFields, DetailedMangaFields, UserMangaListFields, UserInfoFields } from './fields.js';
+import { FieldsParser } from './fields.js';
+
+import axios, { AxiosResponse } from 'axios';
 import { ParsedUrlQuery, stringify } from 'querystring';
 
-/**
- * A wrapper class that formats a {@link FieldsObject} to a string
- *
- * @see https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters for format
- */
-export class FieldsParser<T extends FieldsObject> {
-
-	private fields: T;
-
-	/**
-	 * Creates an instance from a fields object
-	 *
-	 * @param fields - the fields object to format
-	 */
-	constructor(fields: T) {
-		this.fields = fields;
-	}
-
-	/**
-	 * @override
-	 *
-	 * Parses the fields object into a formatted string
-	 *
-	 * @see parseFields
-	 *
-	 * @returns a formatted string
-	 */
-	public toString(): string {
-		return parseFields(this.fields);
-	}
-
-}
+export { FieldsParser } from './fields.js';
 
 /**
  * Parses a promise of an Axios response to a promise of an error or the mapped data
@@ -169,7 +140,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or both the refresh and access tokens
 	 */
-	public async retrieveAuthorizationToken(auth_code: string, verifier: string, redirect_uri?: string): Promise<TokenResponse | ErrorResponse> {
+	public retrieveAuthorizationToken(auth_code: string, verifier: string, redirect_uri?: string): Promise<TokenResponse | ErrorResponse> {
 		const params: object = {
 			'client_id': this.client_id,
 			'grant_type': 'authorization_code',
@@ -197,7 +168,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or both new refresh and access tokens
 	 */
-	public async refreshAuthorizationToken(refresh_token: string): Promise<TokenResponse | ErrorResponse> {
+	public refreshAuthorizationToken(refresh_token: string): Promise<TokenResponse | ErrorResponse> {
 		const params: object = {
 			'client_id': this.client_id,
 			'client_secret': this.client_secret,
@@ -274,7 +245,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or a paged list of anime objects
 	 */
-	public async getAnimeList(params: {
+	public getAnimeList(params: {
 		/** query to search for */
 		q: string;
 		/** max number of anime entries to return, max and default of 100 */
@@ -313,7 +284,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or a detailed anime entry
 	 */
-	public async getAnimeDetails(id: number, params?: {
+	public getAnimeDetails(id: number, params?: {
 		/** the fields that are present in the detailed anime entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
 		fields?: string | FieldsParser<DetailedAnimeFields>;
 	}, token?: string): Promise<DetailedAnime | ErrorResponse> {
@@ -334,7 +305,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or a paged list of ranked anime objects
 	 */
-	public async getAnimeRanking(params: {
+	public getAnimeRanking(params: {
 		/** type of ranking */
 		ranking_type: 'all' | 'airing' | 'upcoming' | 'tv' | 'ova' | 'movie' | 'special' | 'bypopularity' | 'favorite';
 		/** max number of anime entries to return, max and default of 100 */
@@ -363,7 +334,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or a paged list of anime objects
 	 */
-	public async getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', params?: {
+	public getSeasonalAnime(year: number, season: 'winter' | 'spring' | 'summer' | 'fall', params?: {
 		/** how the paged list is sorted descending */
 		sort?: 'anime_score' | 'anime_num_list_users';
 		/** max number of anime entries to return, max and default of 100 */
@@ -401,7 +372,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or paged list of anime objects
 	 */
-	public async getSuggestedAnime(token: string, params?: {
+	public getSuggestedAnime(token: string, params?: {
 		/** max number of anime entries to return, max and default of 100 */
 		limit?: number;
 		/** offset of anime entries to return, default of 0 */
@@ -435,7 +406,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or new status after updating
 	 */
-	public async updateAnimeListStatus(token: string, anime_id: number, status: AnimeListStatus): Promise<AnimeListStatus | ErrorResponse> {
+	public updateAnimeListStatus(token: string, anime_id: number, status: AnimeListStatus): Promise<AnimeListStatus | ErrorResponse> {
 		return handlePromise(axios.patch(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, status, {
 			headers: {
 				...this.createHeader(token),
@@ -454,7 +425,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or void if successfully deleted
 	 */
-	public async deleteAnimeListItem(token: string, anime_id: number): Promise<void | ErrorResponse> {
+	public deleteAnimeListItem(token: string, anime_id: number): Promise<void | ErrorResponse> {
 		return handlePromise(axios.delete(`https://api.myanimelist.net/v2/anime/${anime_id}/my_list_status`, {
 			headers: this.createHeader(token),
 		}), () => undefined);
@@ -471,7 +442,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or paged list of user anime list entries
 	 */
-	public async getUserAnimeList(username: string = '@me', params?: {
+	public getUserAnimeList(username: string = '@me', params?: {
 		/** anime list entry status filter */
 		status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
 		/** how the paged list is sorted */
@@ -501,7 +472,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or an array of forum board objects
 	 */
-	public async getForumBoards(token?: string): Promise<Array<ForumBoards> | ErrorResponse> {
+	public getForumBoards(token?: string): Promise<Array<ForumBoards> | ErrorResponse> {
 		return handlePromise(axios.get('https://api.myanimelist.net/v2/forum/boards', {
 			headers: this.createHeader(token),
 		}), data => (data as { [keys: string]: unknown })['categories'] as Array<ForumBoards>);
@@ -522,7 +493,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or paged list of detailed forum topic objects
 	 */
-	public async getForumTopicDetails(topic_id: number, params?: {
+	public getForumTopicDetails(topic_id: number, params?: {
 		/** max number of forum topics to return, max and default of 100 */
 		limit?: number;
 		/** offset of forum topics to return, default of 0 */
@@ -545,7 +516,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or paged list of forum topic objects
 	 */
-	public async getForumTopics(params: {
+	public getForumTopics(params: {
 		/** ID of the board to search */
 		board_id?: number;
 		/** ID of the subboard to search */
@@ -580,7 +551,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or paged list of manga objects
 	 */
-	public async getMangaList(params: {
+	public getMangaList(params: {
 		/** query to search for */
 		q: string;
 		/** max number of manga entries to return, max and default of 100 */
@@ -619,7 +590,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or detailed manga entry
 	 */
-	public async getMangaDetails(id: number, params?: {
+	public getMangaDetails(id: number, params?: {
 		/** the fields that are present in the detailed manga entry (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
 		fields?: string | FieldsParser<DetailedMangaFields>;
 	}, token?: string): Promise<DetailedManga | ErrorResponse> {
@@ -640,7 +611,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or paged list of ranked manga objects
 	 */
-	public async getMangaRanking(params: {
+	public getMangaRanking(params: {
 		/** type of ranking */
 		ranking_type: 'all' | 'manga' | 'novels' | 'oneshots' | 'doujin' | 'manhwa' | 'manhua' | 'bypopularity' | 'favorite';
 		/** max number of manga entries to return, max and default of 100 */
@@ -667,7 +638,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or new status after updating
 	 */
-	public async updateMangaListStatus(token: string, manga_id: number, status: MangaListStatus): Promise<MangaListStatus | ErrorResponse> {
+	public updateMangaListStatus(token: string, manga_id: number, status: MangaListStatus): Promise<MangaListStatus | ErrorResponse> {
 		return handlePromise(axios.patch(`https://api.myanimelist.net/v2/manga/${manga_id}/my_list_status`, status, {
 			headers: {
 				...this.createHeader(token),
@@ -686,7 +657,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or void if successfully deleted
 	 */
-	public async deleteMangaListItem(token: string, manga_id: number): Promise<void | ErrorResponse> {
+	public deleteMangaListItem(token: string, manga_id: number): Promise<void | ErrorResponse> {
 		return handlePromise(axios.delete(`https://api.myanimelist.net/v2/manga/${manga_id}/my_list_status`, {
 			headers: this.createHeader(token),
 		}), () => undefined);
@@ -703,7 +674,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or paged list of user manga list entries
 	 */
-	public async getUserMangaList(username: string = '@me', params?: {
+	public getUserMangaList(username: string = '@me', params?: {
 		/** manga list entry status filter */
 		status?: 'reading' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_read';
 		/** how the paged list is sorted */
@@ -734,7 +705,7 @@ export default class MALClient {
 	 *
 	 * @returns a promise of an error or a user info object
 	 */
-	public async getUserInfo(token: string, params?: {
+	public getUserInfo(token: string, params?: {
 		/** the fields that are present in the user info (see {@link https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters}), we recommend using a {@link FieldsParser} */
 		fields?: string | FieldsParser<UserInfoFields>;
 	}): Promise<UserInfo | ErrorResponse> {
