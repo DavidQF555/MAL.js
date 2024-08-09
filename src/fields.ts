@@ -12,7 +12,7 @@ export type FieldsObject = { [key: string]: boolean | FieldsObject | undefined }
  *
  * @see https://myanimelist.net/apiconfig/references/api/v2#section/Common-parameters for format
  */
-export class FieldsParser<T extends FieldsObject> {
+export class FieldsParser<T extends FieldsObject> extends Object {
 
 	private fields: T;
 
@@ -22,19 +22,18 @@ export class FieldsParser<T extends FieldsObject> {
 	 * @param fields - the fields object to format
 	 */
 	constructor(fields: T) {
+		super();
 		this.fields = fields;
 	}
 
 	/**
-	 * @override
-	 *
 	 * Parses the fields object into a formatted string
 	 *
 	 * @see parseFields
 	 *
 	 * @returns a formatted string
 	 */
-	public toString(): string {
+	public override toString(): string {
 		return parseFields(this.fields);
 	}
 
