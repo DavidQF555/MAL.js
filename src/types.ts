@@ -66,7 +66,7 @@ export interface Genre {
 export interface AnimeListStatus {
     status?: 'watching' | 'completed' | 'on_hold' | 'dropped' | 'plan_to_watch';
     score?: number;
-    num_episodes_watched?: number;
+    num_watched_episodes?: number;
     is_rewatching?: boolean;
     start_date?: Date;
     finish_date?: Date;
