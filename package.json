@@ -26,12 +26,12 @@
     },
     "homepage": "https://github.com/DavidQF555/MAL.js",
     "devDependencies": {
-        "@types/node": "^22.13.10",
-        "eslint": "^9.22.0",
-        "typescript": "^5.8.2",
-        "typescript-eslint": "^8.26.1"
+        "@types/node": "^24.0.3",
+        "eslint": "^9.29.0",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.34.1"
     },
     "dependencies": {
-        "axios": "^1.8.3"
+        "axios": "^1.10.0"
     }
 }
