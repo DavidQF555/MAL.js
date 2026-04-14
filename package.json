@@ -16,7 +16,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/DavidQF555/MAL.js.git"
+        "url": "git+https://github.com/DavidQF555/MAL.js.git"
     },
     "scripts": {
         "build": "tsc",
