@@ -1,6 +1,6 @@
 {
     "name": "@davidqf555/mal.js",
-    "version": "1.2.4",
+    "version": "1.2.6",
     "main": "./dist/index.js",
     "types": "./dist/types/index.d.ts",
     "files": ["./dist", "./src"],
@@ -26,12 +26,12 @@
     },
     "homepage": "https://github.com/DavidQF555/MAL.js",
     "devDependencies": {
-        "@types/node": "^24.0.3",
-        "eslint": "^9.29.0",
-        "typescript": "^5.8.3",
-        "typescript-eslint": "^8.34.1"
+        "@types/node": "^25.6.0",
+        "eslint": "^10.2.0",
+        "typescript": "^6.0.2",
+        "typescript-eslint": "^8.58.2"
     },
     "dependencies": {
-        "axios": "^1.10.0"
+        "axios": "^1.15.0"
     }
 }

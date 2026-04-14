@@ -1,17 +1,12 @@
-import js from '@eslint/js';
 import ts from 'typescript-eslint';
-import globals from 'globals';
+import { defineConfig } from 'eslint/config';
 
-export default ts.config(
-	js.configs.recommended,
+export default defineConfig(
 	ts.configs.recommended,
 	{
 		languageOptions: {
-			ecmaVersion: 2024,
+			ecmaVersion: 2026,
 			sourceType: 'module',
-			globals: {
-				...globals.node,
-			},
 		},
 		rules: {
 			'brace-style': ['error', 'stroustrup', { 'allowSingleLine': true }],
