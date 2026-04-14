@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
-        "module": "ES2022",
-        "moduleResolution": "node",
+        "module": "node20",
+        "moduleResolution": "node16",
         "noImplicitOverride": true,
         "strict": true,
         "declaration": true,
-        "declarationDir": "./dist/types",
         "sourceMap": true,
-        "target": "ES2022",
+        "target": "es2025",
+        "rootDir": "./src",
         "outDir": "./dist",
+        "types": ["node"]
     },
     "include": [
         "src"
